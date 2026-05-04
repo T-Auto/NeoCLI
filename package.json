@@ -1,13 +1,14 @@
 {
-  "name": "claude-code-source-snapshot",
+  "name": "NeoCLI",
   "version": "2.1.87",
   "private": true,
-  "description": "Reconstructed Bun CLI workspace for the Claude Code source snapshot.",
+  "description": "NeoCLI — standalone AI coding agent, powered by DeepSeek.",
   "type": "module",
   "packageManager": "bun@1.3.11",
   "bin": {
-    "claude": "./cli",
-    "claude-source": "./cli"
+    "NeoCLI": "./NeoCLI",
+    "NEO": "./NeoCLI",
+    "Neo": "./NeoCLI"
   },
   "engines": {
     "bun": ">=1.3.11"

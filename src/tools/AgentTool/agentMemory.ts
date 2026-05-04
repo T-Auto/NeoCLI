@@ -9,7 +9,7 @@ import { getCwd } from '../../utils/cwd.js'
 import { findCanonicalGitRoot } from '../../utils/git.js'
 import { sanitizePath } from '../../utils/path.js'
 
-// Persistent agent memory scope: 'user' (~/.claude/agent-memory/), 'project' (.claude/agent-memory/), or 'local' (.claude/agent-memory-local/)
+// Persistent agent memory scope: 'user' (~/.NeoCLI/agent-memory/), 'project' (.claude/agent-memory/), or 'local' (.claude/agent-memory-local/)
 export type AgentMemoryScope = 'user' | 'project' | 'local'
 
 /**
@@ -40,7 +40,7 @@ function getLocalAgentMemoryDir(dirName: string): string {
       ) + sep
     )
   }
-  return join(getCwd(), '.claude', 'agent-memory-local', dirName) + sep
+  return join(getCwd(), '.NeoCLI', 'agent-memory-local', dirName) + sep
 }
 
 /**
@@ -56,7 +56,7 @@ export function getAgentMemoryDir(
   const dirName = sanitizeAgentTypeForPath(agentType)
   switch (scope) {
     case 'project':
-      return join(getCwd(), '.claude', 'agent-memory', dirName) + sep
+      return join(getCwd(), '.NeoCLI', 'agent-memory', dirName) + sep
     case 'local':
       return getLocalAgentMemoryDir(dirName)
     case 'user':
@@ -77,7 +77,7 @@ export function isAgentMemoryPath(absolutePath: string): boolean {
 
   // Project scope: always cwd-based (not redirected)
   if (
-    normalizedPath.startsWith(join(getCwd(), '.claude', 'agent-memory') + sep)
+    normalizedPath.startsWith(join(getCwd(), '.NeoCLI', 'agent-memory') + sep)
   ) {
     return true
   }
@@ -94,7 +94,7 @@ export function isAgentMemoryPath(absolutePath: string): boolean {
     }
   } else if (
     normalizedPath.startsWith(
-      join(getCwd(), '.claude', 'agent-memory-local') + sep,
+      join(getCwd(), '.NeoCLI', 'agent-memory-local') + sep,
     )
   ) {
     return true
@@ -133,7 +133,7 @@ export function getMemoryScopeDisplay(
  * Creates the memory directory if needed and returns a prompt with memory contents.
  *
  * @param agentType The agent's type name (used as directory name)
- * @param scope 'user' for ~/.claude/agent-memory/ or 'project' for .claude/agent-memory/
+ * @param scope 'user' for ~/.NeoCLI/agent-memory/ or 'project' for .claude/agent-memory/
  */
 export function loadAgentMemoryPrompt(
   agentType: string,

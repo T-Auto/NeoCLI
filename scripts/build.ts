@@ -111,11 +111,11 @@ const features = [...featureSet]
 
 const outfile = compile
   ? dev
-    ? './dist/cli-dev'
-    : './dist/cli'
+    ? './dist/NeoCLI-dev'
+    : './dist/NeoCLI'
   : dev
-    ? './cli-dev'
-    : './cli'
+    ? './NeoCLI-dev'
+    : './NeoCLI'
 const buildTime = new Date().toISOString()
 const version = dev ? getDevVersion(pkg.version) : pkg.version
 
@@ -154,7 +154,7 @@ const defines = {
     'This reconstructed source snapshot does not include Anthropic internal issue routing.',
   ),
   'MACRO.VERSION_CHANGELOG': JSON.stringify(
-    dev ? getVersionChangelog() : 'https://github.com/paoloanzn/claude-code',
+    dev ? getVersionChangelog() : 'https://github.com/paoloanzn/NeoCLI',
   ),
 } as const
 

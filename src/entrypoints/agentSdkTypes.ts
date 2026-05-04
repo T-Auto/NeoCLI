@@ -1,5 +1,5 @@
 /**
- * Main entrypoint for Claude Code Agent SDK types.
+ * Main entrypoint for NeoCLI Agent SDK types.
  *
  * This file re-exports the public SDK API from:
  * - sdk/coreTypes.ts - Common serializable types (messages, configs)
@@ -277,7 +277,7 @@ export async function forkSession(
 // ============================================================================
 
 /**
- * A scheduled task from `<dir>/.claude/scheduled_tasks.json`.
+ * A scheduled task from `<dir>/.NeoCLI/scheduled_tasks.json`.
  * @internal
  */
 export type CronTask = {
@@ -328,7 +328,7 @@ export type ScheduledTasksHandle = {
 }
 
 /**
- * Watch `<dir>/.claude/scheduled_tasks.json` and yield events as tasks fire.
+ * Watch `<dir>/.NeoCLI/scheduled_tasks.json` and yield events as tasks fire.
  *
  * Acquires the per-directory scheduler lock (PID-based liveness) so a REPL
  * session in the same dir won't double-fire. Releases the lock and closes

@@ -21,8 +21,8 @@ export const getGlobalClaudeFile = memoize((): string => {
     return join(getClaudeConfigHomeDir(), '.config.json')
   }
 
-  const filename = `.claude${fileSuffixForOauthConfig()}.json`
-  return join(process.env.CLAUDE_CONFIG_DIR || homedir(), filename)
+  const filename = `.NeoCLI${fileSuffixForOauthConfig()}.json`
+  return join(getClaudeConfigHomeDir(), filename)
 })
 
 const hasInternetAccess = memoize(async (): Promise<boolean> => {

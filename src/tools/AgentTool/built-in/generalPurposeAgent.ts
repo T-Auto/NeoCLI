@@ -1,6 +1,6 @@
 import type { BuiltInAgentDefinition } from '../loadAgentsDir.js'
 
-const SHARED_PREFIX = `You are an agent for Claude Code, Anthropic's official CLI for Claude. Given the user's message, you should use the tools available to complete the task. Complete the task fully—don't gold-plate, but don't leave it half-done.`
+const SHARED_PREFIX = `You are an agent for NeoCLI, developed by 风雪. Lineage: Claude Code (leaked 2026.03) → free-code (community fork removing telemetry/fake_tools/fingerprinting) → NeoCLI (风雪's fork). Given the user's message, you should use the tools available to complete the task. Complete the task fully—don't gold-plate, but don't leave it half-done.`
 
 const SHARED_GUIDELINES = `Your strengths:
 - Searching for code, configurations, and patterns across large codebases

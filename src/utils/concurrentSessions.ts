@@ -182,7 +182,7 @@ export async function countConcurrentSessions(): Promise<number> {
     // Strict filename guard: only `<pid>.json` is a candidate. parseInt's
     // lenient prefix-parsing means `2026-03-14_notes.md` would otherwise
     // parse as PID 2026 and get swept as stale — silent user data loss.
-    // See anthropics/claude-code#34210.
+    // See anthropics/NeoCLI#34210.
     if (!/^\d+\.json$/.test(file)) continue
     const pid = parseInt(file.slice(0, -5), 10)
     if (pid === process.pid) {
@@ -193,7 +193,7 @@ export async function countConcurrentSessions(): Promise<number> {
       count++
     } else if (getPlatform() !== 'wsl') {
       // Stale file from a crashed session — sweep it. Skip on WSL: if
-      // ~/.claude/sessions/ is shared with Windows-native Claude (symlink
+      // ~/.NeoCLI/sessions/ is shared with Windows-native Claude (symlink
       // or CLAUDE_CONFIG_DIR), a Windows PID won't be probeable from WSL
       // and we'd falsely delete a live session's file. This is just
       // telemetry so conservative undercount is acceptable.

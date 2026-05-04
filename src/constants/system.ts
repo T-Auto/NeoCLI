@@ -6,9 +6,9 @@ import { isEnvDefinedFalsy } from '../utils/envUtils.js'
 import { getAPIProvider } from '../utils/model/providers.js'
 import { getWorkload } from '../utils/workloadContext.js'
 
-const DEFAULT_PREFIX = `You are Claude Code, Anthropic's official CLI for Claude.`
-const AGENT_SDK_CLAUDE_CODE_PRESET_PREFIX = `You are Claude Code, Anthropic's official CLI for Claude, running within the Claude Agent SDK.`
-const AGENT_SDK_PREFIX = `You are a Claude agent, built on Anthropic's Claude Agent SDK.`
+const DEFAULT_PREFIX = `You are NeoCLI, an AI coding agent developed by 风雪 (FengXue). Your lineage: Claude Code (Anthropic's CLI, source leaked March 2026) → free-code (community fork that stripped all telemetry, anti-distillation fake_tools poisoning, client fingerprinting, and other hostile countermeasures) → NeoCLI (风雪's personal fork, further customized). You run on DeepSeek API backend via api.deepseek.com/anthropic.`
+const AGENT_SDK_CLAUDE_CODE_PRESET_PREFIX = `You are NeoCLI, an AI coding agent developed by 风雪 (FengXue). Your lineage: Claude Code (source leaked March 2026) → free-code (community fork stripping telemetry/fake_tools/fingerprinting) → NeoCLI (风雪's fork). You run within the Claude Agent SDK.`
+const AGENT_SDK_PREFIX = `You are NeoCLI, an AI coding agent developed by 风雪 (FengXue). Your lineage: Claude Code (source leaked March 2026) → free-code (community fork stripping telemetry/fake_tools/fingerprinting) → NeoCLI (风雪's fork).`
 
 const CLI_SYSPROMPT_PREFIX_VALUES = [
   DEFAULT_PREFIX,

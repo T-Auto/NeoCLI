@@ -28,7 +28,7 @@ const FRICTION_PATTERNS = [
   // "No," or "No!" at start — comma/exclamation implies correction tone
   // (avoids "No problem", "No thanks", "No I think we should...")
   /^no[,!]\s/i,
-  // Direct corrections about Claude's output
+  // Direct corrections about NeoCLI's output
   /\bthat'?s (wrong|incorrect|not (what|right|correct))\b/i,
   /\bnot what I (asked|wanted|meant|said)\b/i,
   // Referencing prior instructions Claude missed
@@ -37,7 +37,7 @@ const FRICTION_PATTERNS = [
   /\bwhy did you\b/i,
   /\byou should(n'?t| not)? have\b/i,
   /\byou were supposed to\b/i,
-  // Explicit retry/revert of Claude's work
+  // Explicit retry/revert of NeoCLI's work
   /\btry again\b/i,
   /\b(undo|revert) (that|this|it|what you)\b/i,
 ]
