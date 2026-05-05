@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//usr/**)",
+      "Bash(ls /bin/grep*)",
+      "Bash(ls \"D:/Auto/Github/NEO/NeoCLI/node_modules/@esfx\"*)"
+    ]
+  }
+}

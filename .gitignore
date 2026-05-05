@@ -1,0 +1,13 @@
+node_modules/
+dist/
+cli
+cli-dev
+openclaw/
+NeoCLI.exe
+NeoCLI-dev.exe
+NeoCLI
+NeoCLI-dev
+*.exe
+*.bat
+NeoCLI
+NeoCLI-dev
