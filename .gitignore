@@ -11,3 +11,4 @@ NeoCLI-dev
 *.bat
 NeoCLI
 NeoCLI-dev
+.bun-build*
