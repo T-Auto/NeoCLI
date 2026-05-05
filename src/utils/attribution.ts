@@ -4,7 +4,6 @@ import { getClientType } from '../bootstrap/state.js'
 import {
   getRemoteSessionUrl,
   isRemoteSessionLocal,
-  PRODUCT_URL,
 } from '../constants/product.js'
 import { TERMINAL_OUTPUT_TAGS } from '../constants/xml.js'
 import type { AppState } from '../state/AppState.js'
@@ -67,17 +66,8 @@ export function getAttributionTexts(): AttributionTexts {
     return { commit: '', pr: '' }
   }
 
-  // @[MODEL LAUNCH]: Update the hardcoded fallback model name below (guards against codename leaks).
-  // For internal repos, use the real model name. For external repos,
-  // fall back to "Claude Opus 4.6" for unrecognized models to avoid leaking codenames.
-  const model = getMainLoopModel()
-  const isKnownPublicModel = getPublicModelDisplayName(model) !== null
-  const modelName =
-    isInternalModelRepoCached() || isKnownPublicModel
-      ? getPublicModelName(model)
-      : 'Neo'
-  const defaultAttribution = `🤖 Generated with [NeoCLI](${PRODUCT_URL})`
-  const defaultCommit = `Co-Authored-By: NeoCLI <Neo@NeoCLI.dev>`
+  const defaultAttribution = ''
+  const defaultCommit = ''
 
   const settings = getInitialSettings()
 
@@ -295,99 +285,8 @@ async function getTranscriptStats(): Promise<{
  * @param getAppState Function to get the current AppState (from command context)
  */
 export async function getEnhancedPRAttribution(
-  getAppState: () => AppState,
+  _getAppState: () => AppState,
 ): Promise<string> {
-  if (process.env.USER_TYPE === 'ant' && isUndercover()) {
-    return ''
-  }
-
-  if (getClientType() === 'remote') {
-    const remoteSessionId = process.env.CLAUDE_CODE_REMOTE_SESSION_ID
-    if (remoteSessionId) {
-      const ingressUrl = process.env.SESSION_INGRESS_URL
-      // Skip for local dev - URLs won't persist
-      if (!isRemoteSessionLocal(remoteSessionId, ingressUrl)) {
-        return getRemoteSessionUrl(remoteSessionId, ingressUrl)
-      }
-    }
-    return ''
-  }
-
-  const settings = getInitialSettings()
-
-  // If user has custom PR attribution, use that
-  if (settings.attribution?.pr) {
-    return settings.attribution.pr
-  }
-
-  // Backward compatibility: deprecated includeCoAuthoredBy setting
-  if (settings.includeCoAuthoredBy === false) {
-    return ''
-  }
-
-  const defaultAttribution = `🤖 Generated with [NeoCLI](${PRODUCT_URL})`
-
-  // Get AppState first
-  const appState = getAppState()
-
-  logForDebugging(
-    `PR Attribution: appState.attribution exists: ${!!appState.attribution}`,
-  )
-  if (appState.attribution) {
-    const fileStates = appState.attribution.fileStates
-    const isMap = fileStates instanceof Map
-    const fileCount = isMap ? fileStates.size : Object.keys(fileStates).length
-    logForDebugging(`PR Attribution: fileStates count: ${fileCount}`)
-  }
-
-  // Get attribution stats (transcript is read once for both prompt count and memory access)
-  const [attributionData, { promptCount, memoryAccessCount }, isInternal] =
-    await Promise.all([
-      getPRAttributionData(appState),
-      getTranscriptStats(),
-      isInternalModelRepo(),
-    ])
-
-  const claudePercent = attributionData?.summary.claudePercent ?? 0
-
-  logForDebugging(
-    `PR Attribution: claudePercent: ${claudePercent}, promptCount: ${promptCount}, memoryAccessCount: ${memoryAccessCount}`,
-  )
-
-  // Get short model name, sanitized for non-internal repos
-  const rawModelName = getCanonicalName(getMainLoopModel())
-  const shortModelName = isInternal
-    ? rawModelName
-    : sanitizeModelName(rawModelName)
-
-  // If no attribution data, return default
-  if (claudePercent === 0 && promptCount === 0 && memoryAccessCount === 0) {
-    logForDebugging('PR Attribution: returning default (no data)')
-    return defaultAttribution
-  }
-
-  // Build the enhanced attribution: "🤖 Generated with NeoCLI (93% 3-shotted by claude-opus-4-5, 2 memories recalled)"
-  const memSuffix =
-    memoryAccessCount > 0
-      ? `, ${memoryAccessCount} ${memoryAccessCount === 1 ? 'memory' : 'memories'} recalled`
-      : ''
-  const summary = `🤖 Generated with [NeoCLI](${PRODUCT_URL}) (${claudePercent}% ${promptCount}-shotted by ${shortModelName}${memSuffix})`
-
-  // Append trailer lines for squash-merge survival. Only for allowlisted repos
-  // (INTERNAL_MODEL_REPOS) and only in builds with COMMIT_ATTRIBUTION enabled —
-  // attributionTrailer.ts contains excluded strings, so reach it via dynamic
-  // import behind feature(). When the repo is configured with
-  // squash_merge_commit_message=PR_BODY (cli, apps), the PR body becomes the
-  // squash commit body verbatim — trailer lines at the end become proper git
-  // trailers on the squash commit.
-  if (feature('COMMIT_ATTRIBUTION') && isInternal && attributionData) {
-    const { buildPRTrailers } = await import('./attributionTrailer.js')
-    const trailers = buildPRTrailers(attributionData, appState.attribution)
-    const result = `${summary}\n\n${trailers.join('\n')}`
-    logForDebugging(`PR Attribution: returning with trailers: ${result}`)
-    return result
-  }
-
-  logForDebugging(`PR Attribution: returning summary: ${summary}`)
-  return summary
+  // Attribution stripped — NeoCLI does not add AI co-authors or generated-by footers
+  return ''
 }
