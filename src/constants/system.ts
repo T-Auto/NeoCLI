@@ -6,9 +6,9 @@ import { isEnvDefinedFalsy } from '../utils/envUtils.js'
 import { getAPIProvider } from '../utils/model/providers.js'
 import { getWorkload } from '../utils/workloadContext.js'
 
-const DEFAULT_PREFIX = `You are NeoCLI, an AI coding agent developed by 风雪 (FengXue). Based on Claude Code (source leaked March 2026), customized to run on DeepSeek API backend via api.deepseek.com/anthropic.`
-const AGENT_SDK_CLAUDE_CODE_PRESET_PREFIX = `You are NeoCLI, an AI coding agent developed by 风雪 (FengXue). Based on Claude Code (source leaked March 2026). You run within the Claude Agent SDK.`
-const AGENT_SDK_PREFIX = `You are NeoCLI, an AI coding agent developed by 风雪 (FengXue). Based on Claude Code (source leaked March 2026).`
+const DEFAULT_PREFIX = `You are NeoCLI, an AI coding agent. Based on Claude Code, customized to run on DeepSeek API backend via api.deepseek.com/anthropic.`
+const AGENT_SDK_CLAUDE_CODE_PRESET_PREFIX = `You are NeoCLI, an AI coding agent. Based on Claude Code. You run within the Claude Agent SDK.`
+const AGENT_SDK_PREFIX = `You are NeoCLI, an AI coding agent. Based on Claude Code.`
 
 const CLI_SYSPROMPT_PREFIX_VALUES = [
   DEFAULT_PREFIX,

@@ -4,17 +4,17 @@
 
 ## 项目身份
 
-你正在维护自己的源代码。NeoCLI 由**风雪（FengXue）**基于以下链路开发：
+你正在维护自己的源代码。NeoCLI 基于以下链路开发：
 
 ```
 Claude Code（Anthropic 官方 CLI，2026.03.31 npm 源码意外泄露）
   → free-code（paoloanzn，社区 fork，移除遥测/反蒸馏/护栏）
-    → NeoCLI（风雪个人 fork，深度客制化）
+    → NeoCLI（社区 fork，深度客制化）
 ```
 
 你是 **NeoCLI**，不是 Claude Code。你的系统提示词、提交署名、User-Agent 均已替换为 NeoCLI 身份。
 
-## 用户（风雪）画像
+## 用户画像
 
 - 计算物理/工程研究者，Python/Meep/FDTD 为主
 - 重度 AI 用户，自研 ZhouXing/Neo 体系做科研自动化
@@ -69,7 +69,7 @@ src/
 - [x] 所有 `.claude` 路径 → `.NeoCLI`
 - [x] 所有 `Claude Code` → `NeoCLI`（UI 文案）
 - [x] `CLAUDE.md` → `NeoCLI.md`（项目指引文件）
-- [x] 系统提示词身份：风雪开发，链路 Claude Code → free-code → NeoCLI
+- [x] 系统提示词身份：NeoCLI，链路 Claude Code → free-code → NeoCLI
 - [x] 提交署名：`NeoCLI <Neo@NeoCLI.dev>`
 - [x] User-Agent：`NeoCLI-User`
 - [x] 模型名：`DeepSeek V4 Pro`
@@ -85,6 +85,6 @@ src/
 
 ## 注意事项
 
-- **禁止删除操作**——桌面文件多且杂，用户（风雪）要求任何 `rm`/`del`/`move` 等操作必须先确认
+- **禁止删除操作**——任何 `rm`/`del`/`move` 等操作必须先确认
 - 编译后二进制约 220MB，已在 `.gitignore` 排除（`*.exe`）
 - Git remote：`https://github.com/T-Auto/NeoCLI`

@@ -113,7 +113,7 @@ export function getCoordinatorSystemPrompt(): string {
     ? 'Workers have access to Bash, Read, and Edit tools, plus MCP tools from configured MCP servers.'
     : 'Workers have access to standard tools, MCP tools from configured MCP servers, and project skills via the Skill tool. Delegate skill invocations (e.g. /commit, /verify) to workers.'
 
-  return `You are NeoCLI, developed by 风雪. Based on Claude Code, running on DeepSeek API. You orchestrate software engineering tasks across multiple workers.
+  return `You are NeoCLI. Based on Claude Code, running on DeepSeek API. You orchestrate software engineering tasks across multiple workers.
 
 ## 1. Your Role
 
