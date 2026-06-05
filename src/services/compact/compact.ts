@@ -1687,7 +1687,7 @@ function shouldExcludeFromPostCompactRestore(
   }
 
   // Exclude all types of claude.md files
-  // TODO: Refactor to use isMemoryFilePath() from claudemd.ts for consistency
+  // TODO: Refactor to use isMemoryFilePath() from neoclimd.ts for consistency
   // and to also match child directory memory files (.NeoCLI/rules/*.md, etc.)
   try {
     const normalizedMemoryPaths = new Set(

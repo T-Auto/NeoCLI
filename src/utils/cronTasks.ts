@@ -158,7 +158,7 @@ export function hasCronTasksSync(dir?: string): boolean {
 }
 
 /**
- * Overwrite .NeoCLI/scheduled_tasks.json with the given tasks. Creates .claude/ if
+ * Overwrite .NeoCLI/scheduled_tasks.json with the given tasks. Creates .NeoCLI/ if
  * missing. Empty task list writes an empty file (rather than deleting) so
  * the file watcher sees a change event on last-task-removed.
  */

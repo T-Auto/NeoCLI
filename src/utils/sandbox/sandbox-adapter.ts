@@ -54,7 +54,7 @@ import { FILE_EDIT_TOOL_NAME } from 'src/tools/FileEditTool/constants.js'
 import { FILE_READ_TOOL_NAME } from 'src/tools/FileReadTool/prompt.js'
 import { WEB_FETCH_TOOL_NAME } from 'src/tools/WebFetchTool/prompt.js'
 import { errorMessage } from '../errors.js'
-import { getClaudeTempDir } from '../permissions/filesystem.js'
+import { getNeoCLITempDir } from '../permissions/filesystem.js'
 import type { PermissionRuleValue } from '../permissions/PermissionRule.js'
 import { ripgrepCommand } from '../ripgrep.js'
 
@@ -222,7 +222,7 @@ export function convertToSandboxRuntimeConfig(
   // Extract filesystem paths from Edit and Read rules
   // Always include current directory and Claude temp directory as writable
   // The temp directory is needed for Shell.ts cwd tracking files
-  const allowWrite: string[] = ['.', getClaudeTempDir()]
+  const allowWrite: string[] = ['.', getNeoCLITempDir()]
   const denyWrite: string[] = []
   const denyRead: string[] = []
   const allowRead: string[] = []
@@ -245,8 +245,8 @@ export function convertToSandboxRuntimeConfig(
   }
 
   // Block writes to .NeoCLI/skills in both original and current working directories.
-  // The sandbox-runtime's getDangerousDirectories() protects .claude/commands and
-  // .claude/agents but not .claude/skills, nor .NeoCLI/*. Skills have the same privilege level
+  // The sandbox-runtime's getDangerousDirectories() protects .NeoCLI/commands and
+  // .NeoCLI/agents but not .NeoCLI/skills, nor .NeoCLI/*. Skills have the same privilege level
   // (auto-discovered, auto-loaded, full Claude capabilities) so they need the
   // same OS-level sandbox protection.
   denyWrite.push(resolve(originalCwd, '.NeoCLI', 'skills'))

@@ -31,7 +31,7 @@ export function getSteps(): Step[] {
       isEnabled: isWorkspaceDirEmpty,
     },
     {
-      key: 'claudemd',
+      key: 'neoclimd',
       text: 'Run /init to create a NeoCLI.md file with instructions for Claude',
       isComplete: hasClaudeMd,
       isCompletable: true,

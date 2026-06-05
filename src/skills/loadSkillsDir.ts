@@ -639,9 +639,9 @@ async function loadSkillsFromCommandsDir(
 export const getSkillDirCommands = memoize(
   async (cwd: string): Promise<Command[]> => {
     const userSkillsDir = join(getClaudeConfigHomeDir(), 'skills')
-    // Backward compatibility: also load skills from ~/.claude/skills/
+    // Backward compatibility: also load skills from ~/.NeoCLI/skills/
     // for users migrating from Claude Code or with an existing Claude setup.
-    const claudeCompatSkillsDir = join(homedir(), '.claude', 'skills')
+    const claudeCompatSkillsDir = join(homedir(), '.NeoCLI', 'skills')
     const managedSkillsDir = join(getManagedFilePath(), '.NeoCLI', 'skills')
     const projectSkillsDirs = getProjectDirsUpToHome('skills', cwd)
 
@@ -694,7 +694,7 @@ export const getSkillDirCommands = memoize(
       isSettingSourceEnabled('userSettings') && !skillsLocked
         ? loadSkillsFromSkillsDir(userSkillsDir, 'userSettings')
         : Promise.resolve([]),
-      // Backward compatibility: also load skills from ~/.claude/skills/
+      // Backward compatibility: also load skills from ~/.NeoCLI/skills/
       isSettingSourceEnabled('userSettings') && !skillsLocked
         ? loadSkillsFromSkillsDir(claudeCompatSkillsDir, 'userSettings')
         : Promise.resolve([]),
@@ -894,7 +894,7 @@ export async function discoverSkillDirsForPaths(
         try {
           await fs.stat(skillDir)
           // Skills dir exists. Before loading, check if the containing dir
-          // is gitignored — blocks e.g. node_modules/pkg/.claude/skills from
+          // is gitignored — blocks e.g. node_modules/pkg/.NeoCLI/skills from
           // loading silently. `git check-ignore` handles nested .gitignore,
           // .git/info/exclude, and global gitignore. Fails open outside a
           // git repo (exit 128 → false); the invocation-time trust dialog

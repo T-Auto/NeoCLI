@@ -1024,7 +1024,7 @@ export const getMemoryFiles = memoize(
 
     if (!hasLoggedInitialLoad) {
       hasLoggedInitialLoad = true
-      logEvent('tengu_claudemd__initial_load', {
+      logEvent('tengu_neoclimd__initial_load', {
         file_count: result.length,
         total_content_length: totalContentLength,
         user_count: typeCounts['User'] ?? 0,
@@ -1044,7 +1044,7 @@ export const getMemoryFiles = memoize(
     // AutoMem/TeamMem are intentionally excluded — they're a separate
     // memory system, not "instructions" in the NeoCLI.md/rules sense.
     // Gated on !forceIncludeExternal: the forceIncludeExternal=true variant
-    // is only used by getExternalClaudeMdIncludes() for approval checks, not
+    // is only used by getExternalNeoCLIMdIncludes() for approval checks, not
     // for building context — firing the hook there would double-fire on startup.
     // The one-shot flag is consumed on every !forceIncludeExternal cache miss
     // (NOT gated on hasInstructionsLoadedHook) so the flag is released even
@@ -1150,7 +1150,7 @@ export function filterInjectedMemoryFiles(
   return files.filter(f => f.type !== 'AutoMem' && f.type !== 'TeamMem')
 }
 
-export const getClaudeMds = (
+export const getNeoCLIMds = (
   memoryFiles: MemoryFileInfo[],
   filter?: (type: MemoryType) => boolean,
 ): string => {
@@ -1396,15 +1396,15 @@ export async function processConditionedMdRules(
   })
 }
 
-export type ExternalClaudeMdInclude = {
+export type ExternalNeoCLIMdInclude = {
   path: string
   parent: string
 }
 
-export function getExternalClaudeMdIncludes(
+export function getExternalNeoCLIMdIncludes(
   files: MemoryFileInfo[],
-): ExternalClaudeMdInclude[] {
-  const externals: ExternalClaudeMdInclude[] = []
+): ExternalNeoCLIMdInclude[] {
+  const externals: ExternalNeoCLIMdInclude[] = []
   for (const file of files) {
     if (file.type !== 'User' && file.parent && !pathInOriginalCwd(file.path)) {
       externals.push({ path: file.path, parent: file.parent })
@@ -1413,11 +1413,11 @@ export function getExternalClaudeMdIncludes(
   return externals
 }
 
-export function hasExternalClaudeMdIncludes(files: MemoryFileInfo[]): boolean {
-  return getExternalClaudeMdIncludes(files).length > 0
+export function hasExternalNeoCLIMdIncludes(files: MemoryFileInfo[]): boolean {
+  return getExternalNeoCLIMdIncludes(files).length > 0
 }
 
-export async function shouldShowClaudeMdExternalIncludesWarning(): Promise<boolean> {
+export async function shouldShowNeoCLIMdExternalIncludesWarning(): Promise<boolean> {
   const config = getCurrentProjectConfig()
   if (
     config.hasClaudeMdExternalIncludesApproved ||
@@ -1426,7 +1426,7 @@ export async function shouldShowClaudeMdExternalIncludesWarning(): Promise<boole
     return false
   }
 
-  return hasExternalClaudeMdIncludes(await getMemoryFiles(true))
+  return hasExternalNeoCLIMdIncludes(await getMemoryFiles(true))
 }
 
 /**

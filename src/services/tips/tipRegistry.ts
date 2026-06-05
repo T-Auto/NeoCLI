@@ -636,7 +636,7 @@ const internalOnlyTips: Tip[] =
   process.env.USER_TYPE === 'ant'
     ? [
         {
-          id: 'important-claudemd',
+          id: 'important-neoclimd',
           content: async () =>
             '[ANT-ONLY] Use "IMPORTANT:" prefix for must-follow NeoCLI.md rules',
           cooldownSessions: 30,

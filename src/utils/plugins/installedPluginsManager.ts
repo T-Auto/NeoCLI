@@ -6,7 +6,7 @@
  * - Which plugins are installed globally
  * - Installation metadata (version, timestamps, paths)
  *
- * The enabled/disabled state remains in .claude/settings.json for per-repo control.
+ * The enabled/disabled state remains in .NeoCLI/settings.json for per-repo control.
  *
  * Rationale: Installation is global (a plugin is either on disk or not), while
  * enabled/disabled state is per-repository (different projects may want different
@@ -1012,7 +1012,7 @@ function getPluginVersionFromManifest(
   pluginId: string,
 ): string {
   const fs = getFsImplementation()
-  const manifestPath = join(pluginCachePath, '.NeoCLI-plugin', 'plugin.json')
+  const manifestPath = join(pluginCachePath, '.claude-plugin', 'plugin.json')
 
   try {
     const manifestContent = fs.readFileSync(manifestPath, { encoding: 'utf-8' })
@@ -1220,8 +1220,8 @@ export async function migrateFromEnabledPlugins(): Promise<void> {
 
           installPath = pluginCachePath
 
-          // Only read manifest if the .NeoCLI-plugin dir is present
-          if (dirEntries.includes('.NeoCLI-plugin')) {
+          // Only read manifest if the .claude-plugin dir is present
+          if (dirEntries.includes('.claude-plugin')) {
             version = getPluginVersionFromManifest(pluginCachePath, pluginId)
           }
 

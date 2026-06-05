@@ -338,7 +338,7 @@ export const FileWriteTool = buildTool({
 
     // Log when writing to NeoCLI.md
     if (fullFilePath.endsWith(`${sep}NeoCLI.md`)) {
-      logEvent('tengu_write_claudemd', {})
+      logEvent('tengu_write_neoclimd', {})
     }
 
     let gitDiff: ToolUseDiff | undefined

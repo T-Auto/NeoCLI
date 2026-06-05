@@ -98,7 +98,7 @@ export function normalizeCaseForComparison(path: string): string {
  * permission dialog and SDK suggestions, so iterating on one skill doesn't
  * require granting session access to all of .NeoCLI/ (settings.json, hooks/, etc.).
  */
-export function getClaudeSkillScope(
+export function getNeoCLISkillScope(
   filePath: string,
 ): { skillName: string; pattern: string } | null {
   const absolutePath = expandPath(filePath)
@@ -199,7 +199,7 @@ function getSettingsPaths(): string[] {
 
 export function isClaudeSettingsPath(filePath: string): boolean {
   // SECURITY: Normalize path structure first to prevent bypass via redundant ./
-  // sequences like `./.claude/./settings.json` which would evade the endsWith() check
+  // sequences like `./.NeoCLI/./settings.json` which would evade the endsWith() check
   const expandedPath = expandPath(filePath)
 
   // Normalize for case-insensitive comparison to prevent bypassing security
@@ -227,7 +227,7 @@ function isClaudeConfigFilePath(filePath: string): boolean {
     return true
   }
 
-  // Check if file is within .claude/commands or .claude/agents directories
+  // Check if file is within .NeoCLI/commands or .NeoCLI/agents directories
   // using proper path segment validation (not string matching with includes())
   // pathInWorkingPath now handles case-insensitive comparison to prevent bypasses
   const commandsDir = join(getOriginalCwd(), '.NeoCLI', 'commands')
@@ -304,7 +304,7 @@ export function isScratchpadEnabled(): boolean {
  * On Unix: 'claude-{uid}' to prevent multi-user permission conflicts
  * On Windows: 'claude' (tmpdir() is already per-user)
  */
-export function getClaudeTempDirName(): string {
+export function getNeoCLITempDirName(): string {
   if (getPlatform() === 'windows') {
     return 'claude'
   }
@@ -328,7 +328,7 @@ export function getClaudeTempDirName(): string {
 // Memoized: called per-tool from permission checks (yoloClassifier, sandbox-adapter)
 // and per-turn from BashTool prompt. Inputs (CLAUDE_CODE_TMPDIR env + platform) are
 // fixed at startup, and the realpath of the system tmp dir does not change mid-session.
-export const getClaudeTempDir = memoize(function getClaudeTempDir(): string {
+export const getNeoCLITempDir = memoize(function getNeoCLITempDir(): string {
   const baseTmpDir =
     process.env.CLAUDE_CODE_TMPDIR ||
     (getPlatform() === 'windows' ? tmpdir() : '/tmp')
@@ -343,7 +343,7 @@ export const getClaudeTempDir = memoize(function getClaudeTempDir(): string {
     // If resolution fails, use the original path
   }
 
-  return join(resolvedBaseTmpDir, getClaudeTempDirName()) + sep
+  return join(resolvedBaseTmpDir, getNeoCLITempDirName()) + sep
 })
 
 /**
@@ -365,7 +365,7 @@ export const getClaudeTempDir = memoize(function getClaudeTempDir(): string {
 export const getBundledSkillsRoot = memoize(
   function getBundledSkillsRoot(): string {
     const nonce = randomBytes(16).toString('hex')
-    return join(getClaudeTempDir(), 'bundled-skills', MACRO.VERSION, nonce)
+    return join(getNeoCLITempDir(), 'bundled-skills', MACRO.VERSION, nonce)
   },
 )
 
@@ -374,7 +374,7 @@ export const getBundledSkillsRoot = memoize(
  * Path format: /tmp/claude-{uid}/{sanitized-cwd}/
  */
 export function getProjectTempDir(): string {
-  return join(getClaudeTempDir(), sanitizePath(getOriginalCwd())) + sep
+  return join(getNeoCLITempDir(), sanitizePath(getOriginalCwd())) + sep
 }
 
 /**
@@ -453,9 +453,9 @@ function isDangerousFilePathToAutoEdit(path: string): boolean {
         continue
       }
 
-      // Special case: .claude/worktrees/ is a structural path (where Claude stores
+      // Special case: .NeoCLI/worktrees/ is a structural path (where Claude stores
       // git worktrees), not a user-created dangerous directory. Skip the .claude
-      // segment when it's followed by 'worktrees'. Any nested .claude directories
+      // segment when it's followed by 'worktrees'. Any nested .NeoCLI directories
       // within the worktree (not followed by 'worktrees') are still blocked.
       if (dir === '.NeoCLI') {
         const nextSegment = pathSegments[i + 1]
@@ -463,7 +463,7 @@ function isDangerousFilePathToAutoEdit(path: string): boolean {
           nextSegment &&
           normalizeCaseForComparison(nextSegment) === 'worktrees'
         ) {
-          break // Skip this .claude, continue checking other segments
+          break // Skip this .NeoCLI, continue checking other segments
         }
       }
 
@@ -607,7 +607,7 @@ function hasSuspiciousWindowsPathPattern(path: string): boolean {
  *
  * This function performs comprehensive safety checks including:
  * - Suspicious Windows path patterns (NTFS streams, 8.3 names, long path prefixes, etc.)
- * - Claude config files (.claude/settings.json, .claude/commands/, .claude/agents/)
+ * - Claude config files (.NeoCLI/settings.json, .NeoCLI/commands/, .NeoCLI/agents/)
  * - MCP CLI state files (managed internally by NeoCLI)
  * - Dangerous files (.bashrc, .gitconfig, .git/, .vscode/, .idea/, etc.)
  *
@@ -897,7 +897,7 @@ function patternWithRoot(
       root: homedir().normalize('NFC'),
     }
   } else if (pattern.startsWith(DIR_SEP)) {
-    // Patterns starting with / resolve relative to the directory where settings are stored (without .claude/)
+    // Patterns starting with / resolve relative to the directory where settings are stored (without .NeoCLI/)
     return {
       relativePattern: pattern,
       root: rootPathForSource(source),
@@ -1239,7 +1239,7 @@ export function checkWritePermissionForTool<Input extends AnyObject>(
   }
 
   // 1.5. Allow writes to internal editable paths (plan files, scratchpad)
-  // This MUST come before isDangerousFilePathToAutoEdit check since .claude is a dangerous directory
+  // This MUST come before isDangerousFilePathToAutoEdit check since .NeoCLI is a dangerous directory
   const absolutePathForEdit = expandPath(path)
   const internalEditResult = checkEditableInternalPath(
     absolutePathForEdit,
@@ -1249,10 +1249,10 @@ export function checkWritePermissionForTool<Input extends AnyObject>(
     return internalEditResult
   }
 
-  // 1.6. Check for .claude/** allow rules BEFORE safety checks
-  // This allows session-level permissions to bypass the safety blocks for .claude/
+  // 1.6. Check for .NeoCLI/** allow rules BEFORE safety checks
+  // This allows session-level permissions to bypass the safety blocks for .NeoCLI/
   // We only allow this for session-level rules to prevent users from accidentally
-  // permanently granting broad access to their .claude/ folder.
+  // permanently granting broad access to their .NeoCLI/ folder.
   //
   // matchingRuleForInput returns the first match across all sources. If the user
   // also has a broader Edit(.claude) rule in userSettings (e.g. from sandbox
@@ -1271,13 +1271,13 @@ export function checkWritePermissionForTool<Input extends AnyObject>(
     'allow',
   )
   if (claudeFolderAllowRule) {
-    // Check if this rule is scoped under .claude/ (project or global).
-    // Accepts both the broad patterns ('/.claude/**', '~/.NeoCLI/**') and
+    // Check if this rule is scoped under .NeoCLI/ (project or global).
+    // Accepts both the broad patterns ('/.NeoCLI/**', '~/.NeoCLI/**') and
     // narrowed ones like '/.NeoCLI/skills/my-skill/**' so users can grant
     // session access to a single skill without also exposing settings.json
     // or hooks/. The rule already matched the path via matchingRuleForInput;
     // this is an additional scope check. Reject '..' to prevent a rule like
-    // '/.claude/../**' from leaking this bypass outside .claude/.
+    // '/.NeoCLI/../**' from leaking this bypass outside .NeoCLI/.
     const ruleContent = claudeFolderAllowRule.ruleValue.ruleContent
     if (
       ruleContent &&
@@ -1306,10 +1306,10 @@ export function checkWritePermissionForTool<Input extends AnyObject>(
   if (!safetyCheck.safe) {
     // SDK suggestion: if under .NeoCLI/skills/{name}/, emit the narrowed
     // session-scoped addRules that step 1.6 will honor on the next call.
-    // Everything else (.claude/settings.json, .git/, .vscode/, .idea/) falls
+    // Everything else (.NeoCLI/settings.json, .git/, .vscode/, .idea/) falls
     // back to generateSuggestions — its setMode suggestion doesn't bypass
     // this check, but preserving it avoids a surprising empty array.
-    const skillScope = getClaudeSkillScope(path)
+    const skillScope = getNeoCLISkillScope(path)
     const safetySuggestions: PermissionUpdate[] = skillScope
       ? [
           {
@@ -1525,7 +1525,7 @@ export function checkEditableInternalPath(
       const jobsRootForms = getPathsForPermissionCheck(jobsRoot).map(normalize)
       // Hijack guard: every resolved form of the job dir must sit under
       // some resolved form of the jobs root. Resolving both sides handles
-      // the case where ~/.claude is a symlink (e.g. to /data/claude-config).
+      // the case where ~/.NeoCLI is a symlink (e.g. to /data/claude-config).
       const isUnderJobsRoot = jobDirForms.every(jd =>
         jobsRootForms.some(jr => jd.startsWith(jr + sep)),
       )
@@ -1580,13 +1580,13 @@ export function checkEditableInternalPath(
     }
   }
 
-  // .claude/launch.json — desktop preview config (dev server command + port).
+  // .NeoCLI/launch.json — desktop preview config (dev server command + port).
   // The desktop's preview_start MCP tool instructs Claude to create/update
   // this file as part of the preview workflow. Without this carve-out the
-  // .claude/ DANGEROUS_DIRECTORIES check prompts for it, which in SDK mode
+  // .NeoCLI/ DANGEROUS_DIRECTORIES check prompts for it, which in SDK mode
   // cascades: user clicks "Always allow" → setMode:acceptEdits suggestion
   // applied → silent downgrade from auto mode. Matches the project-level
-  // .claude/ only (not ~/.NeoCLI/) since launch.json is per-project.
+  // .NeoCLI/ only (not ~/.NeoCLI/) since launch.json is per-project.
   if (
     normalizeCaseForComparison(normalizedPath) ===
     normalizeCaseForComparison(join(getOriginalCwd(), '.NeoCLI', 'launch.json'))

@@ -9,3 +9,4 @@ NeoCLI-dev.exe
 *.exe
 *.bat
 .bun-build*
+.claude/

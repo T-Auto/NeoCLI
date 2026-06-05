@@ -119,7 +119,7 @@ type State = {
   // Last auto-mode classifier request(s) for /share transcript
   lastClassifierRequests: unknown[] | null
   // NeoCLI.md content cached by context.ts for the auto-mode classifier.
-  // Breaks the yoloClassifier → claudemd → filesystem → permissions cycle.
+  // Breaks the yoloClassifier → neoclimd → filesystem → permissions cycle.
   cachedClaudeMdContent: string | null
   // In-memory error log for recent errors
   inMemoryErrorLog: Array<{ error: string; timestamp: string }>

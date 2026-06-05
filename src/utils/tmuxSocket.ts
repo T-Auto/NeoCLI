@@ -12,14 +12,14 @@
  * 1. Claude creates its own tmux socket: `claude-<PID>` (e.g., `claude-12345`)
  * 2. ALL Tmux tool commands use this socket via the `-L` flag
  * 3. ALL Bash tool commands inherit TMUX env var pointing to this socket
- *    (set in Shell.ts via getClaudeTmuxEnv())
+ *    (set in Shell.ts via getNeoCLITmuxEnv())
  *
  * This means ANY tmux command run through Claude - whether via the Tmux tool
  * directly or via Bash - will operate on Claude's isolated socket, NOT the
  * user's tmux session.
  *
  * IMPORTANT: The user's original TMUX env var is NOT used. After socket
- * initialization, getClaudeTmuxEnv() returns a value that overrides the
+ * initialization, getNeoCLITmuxEnv() returns a value that overrides the
  * user's TMUX in all child processes spawned by Shell.ts.
  */
 
@@ -88,7 +88,7 @@ let tmuxToolUsed = false
  * Gets the socket name for Claude's isolated tmux session.
  * Format: claude-<PID>
  */
-export function getClaudeSocketName(): string {
+export function getNeoCLISocketName(): string {
   if (!socketName) {
     socketName = `${CLAUDE_SOCKET_PREFIX}-${process.pid}`
   }
@@ -99,7 +99,7 @@ export function getClaudeSocketName(): string {
  * Gets the socket path if the socket has been initialized.
  * Returns null if not yet initialized.
  */
-export function getClaudeSocketPath(): string | null {
+export function getNeoCLISocketPath(): string | null {
   return socketPath
 }
 
@@ -132,7 +132,7 @@ export function isSocketInitialized(): boolean {
  * Returns null if socket is not yet initialized.
  * When null, Shell.ts does not override TMUX, preserving user's environment.
  */
-export function getClaudeTmuxEnv(): string | null {
+export function getNeoCLITmuxEnv(): string | null {
   if (!socketPath || serverPid === null) {
     return null
   }
@@ -202,7 +202,7 @@ export function hasTmuxToolBeenUsed(): boolean {
  * Safe to call multiple times; will only initialize once.
  *
  * If tmux is not installed, this function returns gracefully without
- * initializing the socket. getClaudeTmuxEnv() will return null, and
+ * initializing the socket. getNeoCLITmuxEnv() will return null, and
  * Bash commands will run without tmux isolation.
  */
 export async function ensureSocketInitialized(): Promise<void> {
@@ -250,7 +250,7 @@ export async function ensureSocketInitialized(): Promise<void> {
  * Called during graceful shutdown to clean up resources.
  */
 async function killTmuxServer(): Promise<void> {
-  const socket = getClaudeSocketName()
+  const socket = getNeoCLISocketName()
   logForDebugging(`[Socket] Killing tmux server for socket: ${socket}`)
 
   const result = await execTmux(['-L', socket, 'kill-server'])
@@ -266,7 +266,7 @@ async function killTmuxServer(): Promise<void> {
 }
 
 async function doInitialize(): Promise<void> {
-  const socket = getClaudeSocketName()
+  const socket = getNeoCLISocketName()
 
   // Create a new session with our custom socket
   // Pass CLAUDE_CODE_SKIP_PROMPT_HISTORY via -e so it's set in the initial shell environment

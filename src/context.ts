@@ -7,9 +7,9 @@ import {
 import { getLocalISODate } from './constants/common.js'
 import {
   filterInjectedMemoryFiles,
-  getClaudeMds,
+  getNeoCLIMds,
   getMemoryFiles,
-} from './utils/claudemd.js'
+} from './utils/neoclimd.js'
 import { logForDiagnosticsNoPII } from './utils/diagLogs.js'
 import { isBareMode, isEnvTruthy } from './utils/envUtils.js'
 import { execFileNoThrow } from './utils/execFileNoThrow.js'
@@ -169,16 +169,16 @@ export const getUserContext = memoize(
     // loop yields naturally at the first fs.readFile.
     const claudeMd = shouldDisableClaudeMd
       ? null
-      : getClaudeMds(filterInjectedMemoryFiles(await getMemoryFiles()))
+      : getNeoCLIMds(filterInjectedMemoryFiles(await getMemoryFiles()))
     // Cache for the auto-mode classifier (yoloClassifier.ts reads this
-    // instead of importing claudemd.ts directly, which would create a
+    // instead of importing neoclimd.ts directly, which would create a
     // cycle through permissions/filesystem → permissions → yoloClassifier).
     setCachedClaudeMdContent(claudeMd || null)
 
     logForDiagnosticsNoPII('info', 'user_context_completed', {
       duration_ms: Date.now() - startTime,
-      claudemd_length: claudeMd?.length ?? 0,
-      claudemd_disabled: Boolean(shouldDisableClaudeMd),
+      neoclimd_length: claudeMd?.length ?? 0,
+      neoclimd_disabled: Boolean(shouldDisableClaudeMd),
     })
 
     return {

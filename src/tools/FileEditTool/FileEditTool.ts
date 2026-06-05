@@ -526,7 +526,7 @@ export const FileEditTool = buildTool({
 
     // 7. Log events
     if (absoluteFilePath.endsWith(`${sep}NeoCLI.md`)) {
-      logEvent('tengu_write_claudemd', {})
+      logEvent('tengu_write_neoclimd', {})
     }
     countLinesChanged(patch)
 

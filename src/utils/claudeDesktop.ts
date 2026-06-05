@@ -10,7 +10,7 @@ import { safeParseJSON } from './json.js'
 import { logError } from './log.js'
 import { getPlatform, SUPPORTED_PLATFORMS } from './platform.js'
 
-export async function getClaudeDesktopConfigPath(): Promise<string> {
+export async function getNeoCLIDesktopConfigPath(): Promise<string> {
   const platform = getPlatform()
 
   if (!SUPPORTED_PLATFORMS.includes(platform)) {
@@ -104,7 +104,7 @@ export async function readClaudeDesktopMcpServers(): Promise<
     )
   }
   try {
-    const configPath = await getClaudeDesktopConfigPath()
+    const configPath = await getNeoCLIDesktopConfigPath()
 
     let configContent: string
     try {
