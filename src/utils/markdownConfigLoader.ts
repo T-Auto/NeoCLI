@@ -301,9 +301,9 @@ export const loadMarkdownFilesForSubdir = memoize(
   ): Promise<MarkdownFile[]> {
     const searchStartTime = Date.now()
     const userDir = join(getClaudeConfigHomeDir(), subdir)
-    // Backward compatibility: also load from ~/.NeoCLI/<subdir>/
+    // Backward compatibility: also load from ~/.claude/<subdir>/
     // for users migrating from Claude Code or with an existing Claude setup.
-    const claudeCompatDir = join(homedir(), '.NeoCLI', subdir)
+    const claudeCompatDir = join(homedir(), '.claude', subdir)
     const managedDir = join(getManagedFilePath(), '.NeoCLI', subdir)
     const projectDirs = getProjectDirsUpToHome(subdir, cwd)
 
