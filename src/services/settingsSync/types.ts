@@ -62,6 +62,6 @@ export const SYNC_KEYS = {
   USER_SETTINGS: '~/.NeoCLI/settings.json',
   USER_MEMORY: '~/.NeoCLI/NeoCLI.md',
   projectSettings: (projectId: string) =>
-    `projects/${projectId}/.claude/settings.local.json`,
+    `projects/${projectId}/.NeoCLI/settings.local.json`,
   projectMemory: (projectId: string) => `projects/${projectId}/NeoCLI.local.md`,
 } as const

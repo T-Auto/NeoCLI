@@ -920,8 +920,8 @@ export async function createAgentWorktree(slug: string): Promise<{
 
   // Fall back to git worktree
   // findCanonicalGitRoot (not findGitRoot) so agent worktrees always land in
-  // the main repo's .claude/worktrees/ even when spawned from inside a session
-  // worktree — otherwise they nest at <worktree>/.claude/worktrees/ and the
+  // the main repo's .NeoCLI/worktrees/ even when spawned from inside a session
+  // worktree — otherwise they nest at <worktree>/.NeoCLI/worktrees/ and the
   // periodic cleanup (which scans the canonical root) never finds them.
   const gitRoot = findCanonicalGitRoot(getCwd())
   if (!gitRoot) {

@@ -962,7 +962,7 @@ export const getMemoryFiles = memoize(
           )),
         )
 
-        // Try reading .claude/rules/*.md files from the additional directory
+        // Try reading .NeoCLI/rules/*.md files from the additional directory
         const rulesDir = join(dir, '.NeoCLI', 'rules')
         result.push(
           ...(await processMdRules({
@@ -1208,7 +1208,7 @@ export async function getManagedAndUserConditionalRules(
 ): Promise<MemoryFileInfo[]> {
   const result: MemoryFileInfo[] = []
 
-  // Process Managed conditional .claude/rules/*.md files
+  // Process Managed conditional .NeoCLI/rules/*.md files
   const managedClaudeRulesDir = getManagedClaudeRulesDir()
   result.push(
     ...(await processConditionedMdRules(
@@ -1221,7 +1221,7 @@ export async function getManagedAndUserConditionalRules(
   )
 
   if (isSettingSourceEnabled('userSettings')) {
-    // Process User conditional .claude/rules/*.md files
+    // Process User conditional .NeoCLI/rules/*.md files
     const userClaudeRulesDir = getUserClaudeRulesDir()
     result.push(
       ...(await processConditionedMdRules(
@@ -1253,7 +1253,7 @@ export async function getMemoryFilesForNestedDirectory(
 ): Promise<MemoryFileInfo[]> {
   const result: MemoryFileInfo[] = []
 
-  // Process project memory files (NeoCLI.md and .claude/NeoCLI.md)
+  // Process project memory files (NeoCLI.md and .NeoCLI/NeoCLI.md)
   if (isSettingSourceEnabled('projectSettings')) {
     const projectPath = join(dir, 'NeoCLI.md')
     result.push(
@@ -1285,7 +1285,7 @@ export async function getMemoryFilesForNestedDirectory(
 
   const rulesDir = join(dir, '.NeoCLI', 'rules')
 
-  // Process project unconditional .claude/rules/*.md files, which were not eagerly loaded
+  // Process project unconditional .NeoCLI/rules/*.md files, which were not eagerly loaded
   // Use a separate processedPaths set to avoid marking conditional rule files as processed
   const unconditionalProcessedPaths = new Set(processedPaths)
   result.push(
@@ -1298,7 +1298,7 @@ export async function getMemoryFilesForNestedDirectory(
     })),
   )
 
-  // Process project conditional .claude/rules/*.md files
+  // Process project conditional .NeoCLI/rules/*.md files
   result.push(
     ...(await processConditionedMdRules(
       targetPath,
@@ -1372,7 +1372,7 @@ export async function processConditionedMdRules(
       return false
     }
 
-    // For Project rules: glob patterns are relative to the directory containing .claude
+    // For Project rules: glob patterns are relative to the directory containing .NeoCLI
     // For Managed/User rules: glob patterns are relative to the original CWD
     const baseDir =
       type === 'Project'
@@ -1430,7 +1430,7 @@ export async function shouldShowClaudeMdExternalIncludesWarning(): Promise<boole
 }
 
 /**
- * Check if a file path is a memory file (NeoCLI.md, NeoCLI.local.md, or .claude/rules/*.md)
+ * Check if a file path is a memory file (NeoCLI.md, NeoCLI.local.md, or .NeoCLI/rules/*.md)
  */
 export function isMemoryFilePath(filePath: string): boolean {
   const name = basename(filePath)

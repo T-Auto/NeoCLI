@@ -43,7 +43,7 @@ import {
   isScratchpadEnabled,
   getScratchpadDir,
 } from '../utils/permissions/filesystem.js'
-import { isEnvTruthy } from '../utils/envUtils.js'
+import { getClaudeConfigHomeDir, isEnvTruthy } from '../utils/envUtils.js'
 import { isReplModeEnabled } from '../tools/REPLTool/constants.js'
 import { feature } from 'bun:bundle'
 import { getFeatureValue_CACHED_MAY_BE_STALE } from 'src/services/analytics/growthbook.js'
@@ -680,6 +680,7 @@ export async function computeSimpleEnvInfo(
       ? `This is a git worktree — an isolated copy of the repository. Run all commands from this directory. Do NOT \`cd\` to the original repository root.`
       : null,
     [`Is a git repository: ${isGit}`],
+    `NeoCLI config directory: ${getClaudeConfigHomeDir()} (skills, agents, commands, settings, hooks are stored here — use .NeoCLI/ prefix within project dirs)`,
     additionalWorkingDirectories && additionalWorkingDirectories.length > 0
       ? `Additional working directories:`
       : null,
@@ -696,7 +697,7 @@ export async function computeSimpleEnvInfo(
       : `Available models: deepseek-v4-pro[1m] (primary, 1M context), deepseek-v4-flash (fast subagent). Model IDs are set via ANTHROPIC_MODEL and CLAUDE_CODE_SUBAGENT_MODEL env vars.`,
     process.env.USER_TYPE === 'ant' && isUndercover()
       ? null
-      : `NeoCLI is available as a CLI in the terminal, desktop app (Mac/Windows), web app (claude.ai/code), and IDE extensions (VS Code, JetBrains).`,
+      : `NeoCLI is available as a CLI in the terminal.`,
     process.env.USER_TYPE === 'ant' && isUndercover()
       ? null
       : `Fast mode for NeoCLI uses the same ${FRONTIER_MODEL_NAME} model with faster output. It does NOT switch to a different model. It can be toggled with /fast.`,

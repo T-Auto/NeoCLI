@@ -1,6 +1,7 @@
 import { realpath } from 'fs/promises'
 import ignore from 'ignore'
 import memoize from 'lodash-es/memoize.js'
+import { homedir } from 'os'
 import {
   basename,
   dirname,
@@ -638,11 +639,14 @@ async function loadSkillsFromCommandsDir(
 export const getSkillDirCommands = memoize(
   async (cwd: string): Promise<Command[]> => {
     const userSkillsDir = join(getClaudeConfigHomeDir(), 'skills')
+    // Backward compatibility: also load skills from ~/.claude/skills/
+    // for users migrating from Claude Code or with an existing Claude setup.
+    const claudeCompatSkillsDir = join(homedir(), '.claude', 'skills')
     const managedSkillsDir = join(getManagedFilePath(), '.NeoCLI', 'skills')
     const projectSkillsDirs = getProjectDirsUpToHome('skills', cwd)
 
     logForDebugging(
-      `Loading skills from: managed=${managedSkillsDir}, user=${userSkillsDir}, project=[${projectSkillsDirs.join(', ')}]`,
+      `Loading skills from: managed=${managedSkillsDir}, user=${userSkillsDir}, claude-compat=${claudeCompatSkillsDir}, project=[${projectSkillsDirs.join(', ')}]`,
     )
 
     // Load from additional directories (--add-dir)
@@ -679,6 +683,7 @@ export const getSkillDirCommands = memoize(
     const [
       managedSkills,
       userSkills,
+      claudeCompatSkills,
       projectSkillsNested,
       additionalSkillsNested,
       legacyCommands,
@@ -688,6 +693,10 @@ export const getSkillDirCommands = memoize(
         : loadSkillsFromSkillsDir(managedSkillsDir, 'policySettings'),
       isSettingSourceEnabled('userSettings') && !skillsLocked
         ? loadSkillsFromSkillsDir(userSkillsDir, 'userSettings')
+        : Promise.resolve([]),
+      // Backward compatibility: also load skills from ~/.claude/skills/
+      isSettingSourceEnabled('userSettings') && !skillsLocked
+        ? loadSkillsFromSkillsDir(claudeCompatSkillsDir, 'userSettings')
         : Promise.resolve([]),
       projectSettingsEnabled
         ? Promise.all(
@@ -717,6 +726,7 @@ export const getSkillDirCommands = memoize(
     const allSkillsWithPaths = [
       ...managedSkills,
       ...userSkills,
+      ...claudeCompatSkills,
       ...projectSkillsNested.flat(),
       ...additionalSkillsNested.flat(),
       ...legacyCommands,

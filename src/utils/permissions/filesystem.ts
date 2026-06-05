@@ -96,7 +96,7 @@ export function normalizeCaseForComparison(path: string): string {
  * return the skill name and a session-allow pattern scoped to just that skill.
  * Used to offer a narrower "allow edits to this skill only" option in the
  * permission dialog and SDK suggestions, so iterating on one skill doesn't
- * require granting session access to all of .claude/ (settings.json, hooks/, etc.).
+ * require granting session access to all of .NeoCLI/ (settings.json, hooks/, etc.).
  */
 export function getClaudeSkillScope(
   filePath: string,
