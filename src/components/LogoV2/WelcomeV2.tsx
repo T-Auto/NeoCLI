@@ -23,9 +23,13 @@ function BottomLine() {
   return <Text dimColor>{'•'.repeat(58)}</Text>;
 }
 
+function safeRepeat(n: number): number {
+  return Math.max(0, n);
+}
+
 function padRight(s: string, w: number) {
   if (s.length >= w) return s;
-  return s + ' '.repeat(w - s.length);
+  return s + ' '.repeat(safeRepeat(w - s.length));
 }
 
 // ── Shared decorative lines ─────────────────────────────────────
@@ -49,7 +53,7 @@ function CatEarsTipLine() {
       <Text color="clawd_body">▀▄▀</Text>
       <Text>{'       '}</Text>
       <Text color="clawd_body">▀▄▀</Text>
-      <Text>{' '.repeat(58 - 16 - 3 - 7 - 3)}</Text>
+      <Text>{' '.repeat(safeRepeat(58 - 16 - 3 - 7 - 3))}</Text>
     </Text>
   );
 }
@@ -61,7 +65,7 @@ function CatEarsBaseLine() {
       <Text color="clawd_body">███</Text>
       <Text>{'       '}</Text>
       <Text color="clawd_body">███</Text>
-      <Text>{' '.repeat(58 - 16 - 3 - 7 - 3)}</Text>
+      <Text>{' '.repeat(safeRepeat(58 - 16 - 3 - 7 - 3))}</Text>
     </Text>
   );
 }
@@ -115,6 +119,11 @@ function LightTheme() {
 
 // ── Dark theme ──────────────────────────────────────────────────
 
+// In dark themes, the cat ears base line includes star decorations.
+// Total available: 58 - 16(lead) - 3(ear) - 7(gap) - 3(ear) = 29 chars.
+// We use: 28 spaces + 1 star = 29 chars to fill the row.
+const DARK_EARS_BASE_FILLER = ' '.repeat(28);
+
 function DarkTheme() {
   return (
     <Text>
@@ -133,15 +142,15 @@ function DarkTheme() {
       <Text>{padRight('                                             ░▓▓███▓▓░', 58)}</Text>
       <Text>
         <Text dimColor>{' *                                 ░░░░'}</Text>
-        <Text>{' '.repeat(58 - 41)}</Text>
+        <Text>{' '.repeat(safeRepeat(58 - 41))}</Text>
       </Text>
       <Text>
         <Text dimColor>{'                                 ░░░░░░░░'}</Text>
-        <Text>{' '.repeat(58 - 45)}</Text>
+        <Text>{' '.repeat(safeRepeat(58 - 45))}</Text>
       </Text>
       <Text>
         <Text dimColor>{'                               ░░░░░░░░░░░░░░░░'}</Text>
-        <Text>{' '.repeat(58 - 53)}</Text>
+        <Text>{' '.repeat(safeRepeat(58 - 53))}</Text>
       </Text>
       <CatEarsTipLine />
       <Text>
@@ -149,9 +158,8 @@ function DarkTheme() {
         <Text color="clawd_body">███</Text>
         <Text>{'       '}</Text>
         <Text color="clawd_body">███</Text>
-        <Text>{'                                        '}</Text>
+        <Text>{DARK_EARS_BASE_FILLER}</Text>
         <Text bold>*</Text>
-        <Text>{' '.repeat(58 - 16 - 3 - 7 - 3 - 40 - 1)}</Text>
       </Text>
       <ClawdBodyLine />
       <Text>
@@ -243,15 +251,15 @@ function AppleDarkTheme() {
       <Text>{padRight('                                             ░▓▓███▓▓░', 58)}</Text>
       <Text>
         <Text dimColor>{' *                                 ░░░░'}</Text>
-        <Text>{' '.repeat(58 - 41)}</Text>
+        <Text>{' '.repeat(safeRepeat(58 - 41))}</Text>
       </Text>
       <Text>
         <Text dimColor>{'                                 ░░░░░░░░'}</Text>
-        <Text>{' '.repeat(58 - 45)}</Text>
+        <Text>{' '.repeat(safeRepeat(58 - 45))}</Text>
       </Text>
       <Text>
         <Text dimColor>{'                               ░░░░░░░░░░░░░░░░'}</Text>
-        <Text>{' '.repeat(58 - 53)}</Text>
+        <Text>{' '.repeat(safeRepeat(58 - 53))}</Text>
       </Text>
       <CatEarsTipLine />
       <Text>
@@ -259,9 +267,8 @@ function AppleDarkTheme() {
         <Text color="clawd_body">███</Text>
         <Text>{'       '}</Text>
         <Text color="clawd_body">███</Text>
-        <Text>{'                                        '}</Text>
+        <Text>{DARK_EARS_BASE_FILLER}</Text>
         <Text bold>*</Text>
-        <Text>{' '.repeat(58 - 16 - 3 - 7 - 3 - 40 - 1)}</Text>
       </Text>
       <Text>
         <Text>{'      '}</Text>
