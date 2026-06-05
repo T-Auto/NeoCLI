@@ -680,7 +680,7 @@ export async function computeSimpleEnvInfo(
       ? `This is a git worktree — an isolated copy of the repository. Run all commands from this directory. Do NOT \`cd\` to the original repository root.`
       : null,
     [`Is a git repository: ${isGit}`],
-    `NeoCLI config directory: ${getClaudeConfigHomeDir()} (skills, agents, commands, settings, hooks are stored here — use .NeoCLI/ prefix within project dirs)`,
+    `NeoCLI config directory: ${getClaudeConfigHomeDir()} — skills, agents, hooks, settings live here. IMPORTANT: Skills use flat \`skill-name/SKILL.md\` format (one level only — the loader does NOT recurse into nested subdirectories). Use \`skills/\` directory, NOT the deprecated \`commands/\`. User-level: \`${getClaudeConfigHomeDir()}/skills/<name>/SKILL.md\`. Project-level: \`.NeoCLI/skills/<name>/SKILL.md\`. For complex multi-layered skills: create ONE flat SKILL.md entry point that uses Read tool to load layered data/config files from a SEPARATE directory (e.g. \`.NeoCLI/asset-config/\` or \`${getClaudeConfigHomeDir()}/data/\`). The SKILL.md is just the orchestrator — domain rules, templates, and per-variant parameters live in the separate data directory and are loaded on demand, keeping context clean.`,
     additionalWorkingDirectories && additionalWorkingDirectories.length > 0
       ? `Additional working directories:`
       : null,

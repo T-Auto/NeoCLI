@@ -168,7 +168,7 @@ For each suggested skill, provide: name, one-line purpose, and why it fits this 
 
 If \`.NeoCLI/skills/\` already exists with skills, review them first. Do not overwrite existing skills — only propose new ones that complement what is already there.
 
-Create each skill at \`.NeoCLI/skills/<skill-name>/SKILL.md\`:
+Create each skill at \`.NeoCLI/skills/<skill-name>/SKILL.md\` (flat structure — the loader does NOT recurse into nested subdirectories, so do not create \`skills/category/sub-skill/SKILL.md\`):
 
 \`\`\`yaml
 ---
@@ -180,6 +180,8 @@ description: <what the skill does and when to use it>
 \`\`\`
 
 Both the user (\`/<skill-name>\`) and Neo can invoke skills by default. For workflows with side effects (e.g., \`/deploy\`, \`/fix-issue 123\`), add \`disable-model-invocation: true\` so only the user can trigger it, and use \`$ARGUMENTS\` to accept input.
+
+For complex multi-layered skills: keep the SKILL.md as a flat orchestrator. Put layered data (templates, per-variant params, domain rules) in a SEPARATE directory (e.g. \`.NeoCLI/asset-config/\` or \`~/.NeoCLI/data/\`). The SKILL.md uses Read tool to load these on demand, keeping context clean and avoiding the flat-structure limitation.
 
 ## Phase 7: Suggest additional optimizations
 

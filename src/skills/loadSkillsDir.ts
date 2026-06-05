@@ -567,8 +567,14 @@ function getCommandName(file: MarkdownFile): string {
 async function loadSkillsFromCommandsDir(
   cwd: string,
 ): Promise<SkillWithPath[]> {
+  logForDebugging(
+    `[CMD_LOAD] loadSkillsFromCommandsDir start, cwd=${cwd}`,
+  )
   try {
     const markdownFiles = await loadMarkdownFilesForSubdir('commands', cwd)
+    logForDebugging(
+      `[CMD_LOAD] loadMarkdownFilesForSubdir returned ${markdownFiles.length} files: ${markdownFiles.map(f => `${f.filePath} (source=${f.source})`).join(', ') || '(none)'}`,
+    )
     const processedFiles = transformSkillFiles(markdownFiles)
 
     const skills: SkillWithPath[] = []
@@ -611,13 +617,25 @@ async function loadSkillsFromCommandsDir(
           }),
           filePath,
         })
+        logForDebugging(
+          `[CMD_LOAD] loaded command: name=${cmdName} source=${source} file=${filePath}`,
+        )
       } catch (error) {
+        logForDebugging(
+          `[CMD_LOAD] parse error for ${filePath}: ${error}`,
+        )
         logError(error)
       }
     }
 
+    logForDebugging(
+      `[CMD_LOAD] loadSkillsFromCommandsDir done, ${skills.length} commands loaded`,
+    )
     return skills
   } catch (error) {
+    logForDebugging(
+      `[CMD_LOAD] loadSkillsFromCommandsDir FATAL: ${error}`,
+    )
     logError(error)
     return []
   }

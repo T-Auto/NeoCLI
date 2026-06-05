@@ -337,6 +337,9 @@ export const loadMarkdownFilesForSubdir = memoize(
       }
     }
 
+    logForDebugging(
+      `[CMD_LOAD] loadMarkdownFilesForSubdir('${subdir}') cwd=${cwd} userDir=${userDir} projectDirs=[${projectDirs.join(',')}] userEnabled=${isSettingSourceEnabled('userSettings')} projectEnabled=${isSettingSourceEnabled('projectSettings')}`,
+    );
     const [managedFiles, userFiles, claudeCompatFiles, projectFilesNested] = await Promise.all([
       // Always load managed (policy settings)
       loadMarkdownFiles(managedDir).then(_ =>
@@ -357,7 +360,7 @@ export const loadMarkdownFilesForSubdir = memoize(
             })),
           )
         : Promise.resolve([]),
-      // Backward compatibility: also load agents/commands from ~/.NeoCLI/
+      // Backward compatibility: also load from ~/.claude/
       isSettingSourceEnabled('userSettings') &&
       !(subdir === 'agents' && isRestrictedToPluginOnly('agents'))
         ? loadMarkdownFiles(claudeCompatDir).then(_ =>
