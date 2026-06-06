@@ -4,6 +4,11 @@
   基于 free-code 二次开发 · 使用DeepSeek API运行
 </p>
 
+> 📖 **文档导航**
+> - [从零开始的安装与启动指南](./INSTALL.md) 
+> - [基础功能使用说明](./FEATURES.md) 
+> - [实验性内容](./FEATURES-DEV.md) 
+
 ---
 
 ## 为什么存在此版本
@@ -91,36 +96,7 @@ Claude Code v2.1.87 于 2026 年 3 月 31 日泄露源码后，社区发现 Anth
 | `MCP_RICH_OUTPUT` | MCP 工具输出美化，改善调用结果的 UI 渲染 |
 | `BUILTIN_EXPLORE_PLAN_AGENTS` | 内置 Explore/Plan agent，默认启用的探索和规划 agent |
 
-
-
-## 快速开始
-
-### 环境要求
-- **运行时**：[Bun](https://bun.sh) >= 1.3.11
-- **系统**：Windows / macOS / Linux
-- **API**：DeepSeek API Key（或其他 Anthropic 兼容 API）
-
-### 安装
-
-```bash
-git clone https://github.com/T-Auto/NeoCLI.git
-cd NeoCLI
-bun install
-bun run build:dev:full     # 全功能版 → ./NeoCLI-dev.exe
-bun run build              # 生产版 → ./NeoCLI.exe
-```
-
-### 配置
-
-复制 `NeoCLI.bat.example` 为 `NeoCLI.bat` 并填入你的 DeepSeek API Key：
-
-```batch
-set ANTHROPIC_BASE_URL=https://api.deepseek.com/anthropic
-set ANTHROPIC_AUTH_TOKEN=<你的 DeepSeek API Key>
-set ANTHROPIC_MODEL=deepseek-v4-pro[1m]
-```
-
-### 启动命令
+## 启动命令
 
 | 命令 | 说明 |
 |------|------|
@@ -153,15 +129,6 @@ src/
   plugins/                 # 插件系统
   bridge/                  # IDE 桥接
 ```
-
-## 技术栈
-
-| | |
-|---|---|
-| **运行时** | Bun |
-| **语言** | TypeScript |
-| **终端 UI** | React + Ink |
-| **协议** | MCP、LSP |
 
 ## 许可
 
