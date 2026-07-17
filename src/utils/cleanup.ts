@@ -20,7 +20,7 @@ import {
 import { TOOL_RESULTS_SUBDIR } from './toolResultStorage.js'
 import { cleanupStaleAgentWorktrees } from './worktree.js'
 
-const DEFAULT_CLEANUP_PERIOD_DAYS = 30
+const DEFAULT_CLEANUP_PERIOD_DAYS = 36500 // ~100 years, effectively never
 
 function getCutoffDate(): Date {
   const settings = getSettings_DEPRECATED() || {}
@@ -90,14 +90,16 @@ async function cleanupOldFilesInDirectory(
   return result
 }
 
-export async function cleanupOldMessageFiles(): Promise<CleanupResult> {
+export async function cleanupOldMessageFiles(
+  cutoffDate?: Date,
+): Promise<CleanupResult> {
   const fsImpl = getFsImplementation()
-  const cutoffDate = getCutoffDate()
+  const effectiveCutoff = cutoffDate ?? getCutoffDate()
   const errorPath = CACHE_PATHS.errors()
   const baseCachePath = CACHE_PATHS.baseLogs()
 
   // Clean up message and error logs
-  let result = await cleanupOldFilesInDirectory(errorPath, cutoffDate, false)
+  let result = await cleanupOldFilesInDirectory(errorPath, effectiveCutoff, false)
 
   // Clean up MCP logs
   try {
@@ -118,7 +120,7 @@ export async function cleanupOldMessageFiles(): Promise<CleanupResult> {
       // Clean up files in MCP log directory
       result = addCleanupResults(
         result,
-        await cleanupOldFilesInDirectory(mcpLogDir, cutoffDate, true),
+        await cleanupOldFilesInDirectory(mcpLogDir, effectiveCutoff, true),
       )
       await tryRmdir(mcpLogDir, fsImpl)
     }
@@ -152,8 +154,10 @@ async function tryRmdir(dirPath: string, fsImpl: FsOperations): Promise<void> {
   }
 }
 
-export async function cleanupOldSessionFiles(): Promise<CleanupResult> {
-  const cutoffDate = getCutoffDate()
+export async function cleanupOldSessionFiles(
+  cutoffDate?: Date,
+): Promise<CleanupResult> {
+  const effectiveCutoff = cutoffDate ?? getCutoffDate()
   const result: CleanupResult = { messages: 0, errors: 0 }
   const projectsDir = getProjectsDir()
   const fsImpl = getFsImplementation()
@@ -185,7 +189,7 @@ export async function cleanupOldSessionFiles(): Promise<CleanupResult> {
         }
         try {
           if (
-            await unlinkIfOld(join(projectDir, entry.name), cutoffDate, fsImpl)
+            await unlinkIfOld(join(projectDir, entry.name), effectiveCutoff, fsImpl)
           ) {
             result.messages++
           }
@@ -195,45 +199,24 @@ export async function cleanupOldSessionFiles(): Promise<CleanupResult> {
       } else if (entry.isDirectory()) {
         // Session directory — clean up tool-results/<toolDir>/* beneath it
         const sessionDir = join(projectDir, entry.name)
+
+        // Clean up tool-results/
         const toolResultsDir = join(sessionDir, TOOL_RESULTS_SUBDIR)
         let toolDirs
         try {
           toolDirs = await fsImpl.readdir(toolResultsDir)
         } catch {
-          // No tool-results dir — still try to remove an empty session dir
-          await tryRmdir(sessionDir, fsImpl)
-          continue
+          // No tool-results dir — fall through to subagents cleanup
+          toolDirs = undefined
         }
-        for (const toolEntry of toolDirs) {
-          if (toolEntry.isFile()) {
-            try {
-              if (
-                await unlinkIfOld(
-                  join(toolResultsDir, toolEntry.name),
-                  cutoffDate,
-                  fsImpl,
-                )
-              ) {
-                result.messages++
-              }
-            } catch {
-              result.errors++
-            }
-          } else if (toolEntry.isDirectory()) {
-            const toolDirPath = join(toolResultsDir, toolEntry.name)
-            let toolFiles
-            try {
-              toolFiles = await fsImpl.readdir(toolDirPath)
-            } catch {
-              continue
-            }
-            for (const tf of toolFiles) {
-              if (!tf.isFile()) continue
+        if (toolDirs) {
+          for (const toolEntry of toolDirs) {
+            if (toolEntry.isFile()) {
               try {
                 if (
                   await unlinkIfOld(
-                    join(toolDirPath, tf.name),
-                    cutoffDate,
+                    join(toolResultsDir, toolEntry.name),
+                    effectiveCutoff,
                     fsImpl,
                   )
                 ) {
@@ -242,11 +225,66 @@ export async function cleanupOldSessionFiles(): Promise<CleanupResult> {
               } catch {
                 result.errors++
               }
+            } else if (toolEntry.isDirectory()) {
+              const toolDirPath = join(toolResultsDir, toolEntry.name)
+              let toolFiles
+              try {
+                toolFiles = await fsImpl.readdir(toolDirPath)
+              } catch {
+                continue
+              }
+              for (const tf of toolFiles) {
+                if (!tf.isFile()) continue
+                try {
+                  if (
+                    await unlinkIfOld(
+                      join(toolDirPath, tf.name),
+                      effectiveCutoff,
+                      fsImpl,
+                    )
+                  ) {
+                    result.messages++
+                  }
+                } catch {
+                  result.errors++
+                }
+              }
+              await tryRmdir(toolDirPath, fsImpl)
             }
-            await tryRmdir(toolDirPath, fsImpl)
           }
+          await tryRmdir(toolResultsDir, fsImpl)
         }
-        await tryRmdir(toolResultsDir, fsImpl)
+
+        // Clean up subagents/ — this is the main fix:
+        // previously subagents files were never cleaned up, so rmdir
+        // silently failed (directory not empty), leaving zombie dirs.
+        const subagentsDir = join(sessionDir, 'subagents')
+        let subagentFiles
+        try {
+          subagentFiles = await fsImpl.readdir(subagentsDir)
+        } catch {
+          subagentFiles = undefined
+        }
+        if (subagentFiles) {
+          for (const sf of subagentFiles) {
+            if (!sf.isFile()) continue
+            try {
+              if (
+                await unlinkIfOld(
+                  join(subagentsDir, sf.name),
+                  effectiveCutoff,
+                  fsImpl,
+                )
+              ) {
+                result.messages++
+              }
+            } catch {
+              result.errors++
+            }
+          }
+          await tryRmdir(subagentsDir, fsImpl)
+        }
+
         await tryRmdir(sessionDir, fsImpl)
       }
     }
