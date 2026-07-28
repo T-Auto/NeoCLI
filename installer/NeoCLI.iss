@@ -23,15 +23,18 @@ PrivilegesRequired=lowest
 UninstallDisplayName=NeoCLI
 SetupIconFile=..\dist\windows\NeoCLI.ico
 
+[Languages]
+Name: "chinesesimp"; MessagesFile: "languages\ChineseSimplified.isl"
+
 [Files]
 Source: "..\dist\windows\NeoCLI.exe"; DestDir: "{app}"; Flags: ignoreversion
 [Icons]
 Name: "{autoprograms}\NeoCLI"; Filename: "{app}\{#MyAppExeName}"
 Name: "{autodesktop}\NeoCLI"; Filename: "{app}\{#MyAppExeName}"; Tasks: desktopicon
 [Tasks]
-Name: "desktopicon"; Description: "Create a desktop shortcut"; GroupDescription: "Additional shortcuts:"; Flags: unchecked
+Name: "desktopicon"; Description: "创建桌面快捷方式"; GroupDescription: "附加快捷方式："; Flags: unchecked
 [Run]
-Filename: "{app}\{#MyAppExeName}"; Description: "Launch NeoCLI"; Flags: nowait postinstall skipifsilent
+Filename: "{app}\{#MyAppExeName}"; Description: "启动 NeoCLI"; Flags: nowait postinstall skipifsilent
 
 [Code]
 var
@@ -58,8 +61,8 @@ begin
 end;
 procedure InitializeWizard;
 begin
-  ApiKeyPage := CreateInputQueryPage(wpSelectDir, 'API key', 'Configure NeoCLI', 'Enter the API key used by NeoCLI. It is stored only in your Windows user profile and can be replaced by setting ANTHROPIC_AUTH_TOKEN before launch.');
-  ApiKeyPage.Add('API key:', True);
+  ApiKeyPage := CreateInputQueryPage(wpSelectDir, 'API 密钥', '配置 NeoCLI', '请输入 NeoCLI 使用的 API 密钥。密钥仅保存到当前 Windows 用户目录，并可通过 ANTHROPIC_AUTH_TOKEN 环境变量覆盖。');
+  ApiKeyPage.Add('API 密钥：', True);
 end;
 function ShouldSkipPage(PageID: Integer): Boolean;
 begin
@@ -69,7 +72,7 @@ function NextButtonClick(CurPageID: Integer): Boolean;
 begin
   Result := True;
   if (CurPageID = ApiKeyPage.ID) and (Trim(ApiKeyPage.Values[0]) = '') then begin
-    MsgBox('An API key is required to continue.', mbError, MB_OK);
+    MsgBox('必须输入 API 密钥才能继续。', mbError, MB_OK);
     Result := False;
   end;
 end;
