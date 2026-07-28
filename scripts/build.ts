@@ -176,7 +176,7 @@ const cmd = [
   outfile,
   '--minify',
   '--bytecode',
-  ...(windowsInstaller ? ['--windows-icon', './dist/windows/NeoCLI.ico'] : []),
+  ...(windowsInstaller ? ['--windows-icon=./dist/windows/NeoCLI.ico'] : []),
   '--packages',
   'bundle',
   '--conditions',

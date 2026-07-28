@@ -347,19 +347,19 @@ function ModeIndicator({
   // Rendered before the tasks pill so a long pill label (e.g. ultraplan URL)
   // doesn't push the mode indicator off-screen.
   const permissionModeLabel = currentMode === 'bypassPermissions' || currentMode === 'dontAsk'
-    ? '危险模式'
+    ? '全权访问'
     : currentMode === 'acceptEdits'
-      ? '自动接受编辑'
+      ? '自动（AI代理批准权限请求）'
       : currentMode === 'plan'
         ? '计划模式'
         : currentMode === 'auto'
           ? '自动模式'
-          : '默认模式';
+          : '默认（手动批准权限请求）';
   const displayedPermissionMode = currentMode ?? 'default';
   const modePart = !getIsRemoteMode() ? <Text color={getModeColor(displayedPermissionMode)} key="mode">
         {permissionModeSymbol(displayedPermissionMode)}{' '}
         {permissionModeLabel}
-        {(displayedPermissionMode === 'bypassPermissions' || displayedPermissionMode === 'dontAsk') && '（所有权限检查已跳过）'}
+        {(displayedPermissionMode === 'bypassPermissions' || displayedPermissionMode === 'dontAsk') && '（跳过所有权限审查）'}
         {shouldShowModeHint && <Text dimColor>
             {'  按 '}
             <KeyboardShortcutHint shortcut={modeCycleShortcut} action="切换模式" parens />

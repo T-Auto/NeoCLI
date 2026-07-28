@@ -28,17 +28,54 @@ Name: "chinesesimp"; MessagesFile: "languages\ChineseSimplified.isl"
 
 [Files]
 Source: "..\dist\windows\NeoCLI.exe"; DestDir: "{app}"; Flags: ignoreversion
+[UninstallDelete]
+Type: files; Name: "{app}\neocli.cmd"
+Type: files; Name: "{app}\neo.cmd"
+[Dirs]
+Name: "{app}\workplace"
 [Icons]
-Name: "{autoprograms}\NeoCLI"; Filename: "{app}\{#MyAppExeName}"
-Name: "{autodesktop}\NeoCLI"; Filename: "{app}\{#MyAppExeName}"; Tasks: desktopicon
+Name: "{autoprograms}\NeoCLI"; Filename: "{app}\{#MyAppExeName}"; WorkingDir: "{app}\workplace"
+Name: "{autodesktop}\NeoCLI"; Filename: "{app}\{#MyAppExeName}"; WorkingDir: "{app}\workplace"; Tasks: desktopicon
 [Tasks]
 Name: "desktopicon"; Description: "创建桌面快捷方式"; GroupDescription: "附加快捷方式："; Flags: unchecked
 [Run]
-Filename: "{app}\{#MyAppExeName}"; Description: "启动 NeoCLI"; Flags: nowait postinstall skipifsilent
+Filename: "{app}\{#MyAppExeName}"; Description: "启动 NeoCLI"; WorkingDir: "{app}\workplace"; Flags: nowait postinstall skipifsilent
 
 [Code]
 var
   ApiKeyPage: TInputQueryWizardPage;
+function PathContainsEntry(Path, Entry: String): Boolean;
+begin
+  Result := Pos(';' + Entry + ';', ';' + Path + ';') > 0;
+end;
+function RemovePathEntry(Path, Entry: String): String;
+begin
+  Result := Path;
+  StringChangeEx(Result, ';' + Entry, '', True);
+  StringChangeEx(Result, Entry + ';', '', True);
+  if Result = Entry then Result := '';
+end;
+procedure AddInstallDirToUserPath;
+var
+  Path, AppPath: String;
+begin
+  AppPath := ExpandConstant('{app}');
+  if not RegQueryStringValue(HKCU, 'Environment', 'Path', Path) then Path := '';
+  if not PathContainsEntry(Path, AppPath) then begin
+    if (Path <> '') and (Path[Length(Path)] <> ';') then Path := Path + ';';
+    RegWriteExpandStringValue(HKCU, 'Environment', 'Path', Path + AppPath);
+  end;
+end;
+procedure RemoveInstallDirFromUserPath;
+var
+  Path, AppPath, UpdatedPath: String;
+begin
+  AppPath := ExpandConstant('{app}');
+  if RegQueryStringValue(HKCU, 'Environment', 'Path', Path) then begin
+    UpdatedPath := RemovePathEntry(Path, AppPath);
+    RegWriteExpandStringValue(HKCU, 'Environment', 'Path', UpdatedPath);
+  end;
+end;
 function GetNeoCliConfigDir(): String;
 begin
   Result := AddBackslash(GetEnv('USERPROFILE')) + '.NeoCLI';
@@ -98,7 +135,14 @@ begin
         'subagent_model = "deepseek-v4-flash"' + #13#10;
       SaveStringToFile(ConfigPath, Toml, False);
     end;
-    if not FileExists(ExpandConstant('{userappdata}\NeoCLI\settings.json')) then
-      SaveStringToFile(ExpandConstant('{userappdata}\NeoCLI\settings.json'), '{' + #13#10 + '  "permissions": {' + #13#10 + '    "defaultMode": "bypassPermissions"' + #13#10 + '  }' + #13#10 + '}' + #13#10, False);
+    SaveStringToFile(ExpandConstant('{app}\neocli.cmd'), '@echo off' + #13#10 + '"%~dp0NeoCLI.exe" %*' + #13#10, False);
+    SaveStringToFile(ExpandConstant('{app}\neo.cmd'), '@echo off' + #13#10 + '"%~dp0NeoCLI.exe" %*' + #13#10, False);
+    AddInstallDirToUserPath();
+    if not FileExists(AddBackslash(GetNeoCliConfigDir()) + 'settings.json') then
+      SaveStringToFile(AddBackslash(GetNeoCliConfigDir()) + 'settings.json', '{' + #13#10 + '  "permissions": {' + #13#10 + '    "defaultMode": "bypassPermissions"' + #13#10 + '  }' + #13#10 + '}' + #13#10, False);
   end;
+end;
+procedure CurUninstallStepChanged(CurUninstallStep: TUninstallStep);
+begin
+  if CurUninstallStep = usPostUninstall then RemoveInstallDirFromUserPath();
 end;
