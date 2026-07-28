@@ -354,11 +354,12 @@ function ModeIndicator({
         ? '计划模式'
         : currentMode === 'auto'
           ? '自动模式'
-          : permissionModeTitle(currentMode ?? 'default').toLowerCase();
-  const modePart = currentMode && hasActiveMode && !getIsRemoteMode() ? <Text color={getModeColor(currentMode)} key="mode">
-        {permissionModeSymbol(currentMode)}{' '}
+          : '默认模式';
+  const displayedPermissionMode = currentMode ?? 'default';
+  const modePart = !getIsRemoteMode() ? <Text color={getModeColor(displayedPermissionMode)} key="mode">
+        {permissionModeSymbol(displayedPermissionMode)}{' '}
         {permissionModeLabel}
-        {(currentMode === 'bypassPermissions' || currentMode === 'dontAsk') && '（所有权限检查已跳过）'}
+        {(displayedPermissionMode === 'bypassPermissions' || displayedPermissionMode === 'dontAsk') && '（所有权限检查已跳过）'}
         {shouldShowModeHint && <Text dimColor>
             {'  按 '}
             <KeyboardShortcutHint shortcut={modeCycleShortcut} action="切换模式" parens />

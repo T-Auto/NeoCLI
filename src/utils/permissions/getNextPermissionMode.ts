@@ -53,6 +53,12 @@ export function getNextPermissionMode(
       return 'plan'
 
     case 'plan':
+      // NeoCLI's public Windows build exposes dangerous mode explicitly in the
+      // local Shift+Tab cycle. This lets users return to it after selecting a
+      // confirmation-based mode, without relying on internal feature gates.
+      if (process.env.USER_TYPE !== 'ant') {
+        return 'bypassPermissions'
+      }
       if (toolPermissionContext.isBypassPermissionsModeAvailable) {
         return 'bypassPermissions'
       }
