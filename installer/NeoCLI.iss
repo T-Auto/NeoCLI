@@ -21,6 +21,7 @@ Compression=lzma2/ultra64
 SolidCompression=yes
 PrivilegesRequired=lowest
 UninstallDisplayName=NeoCLI
+SetupIconFile=..\dist\windows\NeoCLI.ico
 
 [Files]
 Source: "..\dist\windows\NeoCLI.exe"; DestDir: "{app}"; Flags: ignoreversion
@@ -35,9 +36,17 @@ Filename: "{app}\{#MyAppExeName}"; Description: "Launch NeoCLI"; Flags: nowait p
 [Code]
 var
   ApiKeyPage: TInputQueryWizardPage;
+function GetNeoCliConfigDir(): String;
+begin
+  Result := AddBackslash(GetEnv('USERPROFILE')) + '.NeoCLI';
+end;
 function GetInstallerConfigPath(): String;
 begin
-  Result := ExpandConstant('{userprofile}\.NeoCLI\config.toml');
+  Result := AddBackslash(GetNeoCliConfigDir()) + 'config.toml';
+end;
+function GetInstallerAuthPath(): String;
+begin
+  Result := AddBackslash(GetNeoCliConfigDir()) + 'auth.toml';
 end;
 function JsonEscape(Value: String): String;
 begin
@@ -54,7 +63,7 @@ begin
 end;
 function ShouldSkipPage(PageID: Integer): Boolean;
 begin
-  Result := (PageID = ApiKeyPage.ID) and FileExists(GetInstallerConfigPath());
+  Result := (PageID = ApiKeyPage.ID) and FileExists(GetInstallerAuthPath());
 end;
 function NextButtonClick(CurPageID: Integer): Boolean;
 begin
@@ -66,16 +75,18 @@ begin
 end;
 procedure CurStepChanged(CurStep: TSetupStep);
 var
-  ConfigPath, ConfigDir, Toml: String;
+  ConfigPath, ConfigDir, AuthPath, Toml: String;
 begin
   if CurStep = ssPostInstall then begin
     ConfigPath := GetInstallerConfigPath();
-    ConfigDir := ExtractFileDir(ConfigPath);
+    AuthPath := GetInstallerAuthPath();
+    ConfigDir := GetNeoCliConfigDir();
     ForceDirectories(ConfigDir);
+    if not FileExists(AuthPath) then
+      SaveStringToFile(AuthPath, 'api_key = "' + JsonEscape(ApiKeyPage.Values[0]) + '"' + #13#10, False);
     if not FileExists(ConfigPath) then begin
       Toml := '# NeoCLI user configuration' + #13#10 +
         '# Edit this file to change the API endpoint or model names.' + #13#10 + #13#10 +
-        'api_key = "' + JsonEscape(ApiKeyPage.Values[0]) + '"' + #13#10 +
         'base_url = "https://api.deepseek.com/anthropic"' + #13#10 +
         'model = "deepseek-v4-pro"' + #13#10 +
         'default_opus_model = "deepseek-v4-pro"' + #13#10 +

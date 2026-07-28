@@ -3,7 +3,6 @@ import { homedir } from 'os'
 import { join } from 'path'
 
 type UserConfig = {
-  api_key?: unknown
   base_url?: unknown
   model?: unknown
   default_opus_model?: unknown
@@ -12,10 +11,22 @@ type UserConfig = {
   subagent_model?: unknown
 }
 
+type AuthConfig = {
+  api_key?: unknown
+}
+
+function getConfigDir(): string {
+  return process.env.CLAUDE_CONFIG_DIR ?? join(homedir(), '.NeoCLI')
+}
+
 function getConfigPath(): string {
-  return process.env.NEOCLI_CONFIG_PATH ?? join(
-    process.env.CLAUDE_CONFIG_DIR ?? join(homedir(), '.NeoCLI'),
-    'config.toml',
+  return process.env.NEOCLI_CONFIG_PATH ?? join(getConfigDir(), 'config.toml')
+}
+
+function getAuthPath(): string {
+  return process.env.NEOCLI_AUTH_PATH ?? join(
+    getConfigDir(),
+    'auth.toml',
   )
 }
 
@@ -24,15 +35,19 @@ function setIfMissing(name: string, value: unknown): void {
   process.env[name] = value.trim()
 }
 
-/** Applies user-editable config.toml values before API modules inspect process.env. */
+/** Applies auth.toml and user-editable config.toml values before API modules inspect process.env. */
 export function loadInstalledConfig(): void {
+  const authPath = getAuthPath()
   const configPath = getConfigPath()
-  if (!existsSync(configPath)) return
   try {
-    const config = Bun.TOML.parse(readFileSync(configPath, 'utf8')) as UserConfig
-    if (!process.env.ANTHROPIC_AUTH_TOKEN && !process.env.ANTHROPIC_API_KEY) {
-      setIfMissing('ANTHROPIC_AUTH_TOKEN', config.api_key)
+    if (existsSync(authPath)) {
+      const auth = Bun.TOML.parse(readFileSync(authPath, 'utf8')) as AuthConfig
+      if (!process.env.ANTHROPIC_AUTH_TOKEN && !process.env.ANTHROPIC_API_KEY) {
+        setIfMissing('ANTHROPIC_AUTH_TOKEN', auth.api_key)
+      }
     }
+    if (!existsSync(configPath)) return
+    const config = Bun.TOML.parse(readFileSync(configPath, 'utf8')) as UserConfig
     setIfMissing('ANTHROPIC_BASE_URL', config.base_url)
     setIfMissing('ANTHROPIC_MODEL', config.model)
     setIfMissing('ANTHROPIC_DEFAULT_OPUS_MODEL', config.default_opus_model)
