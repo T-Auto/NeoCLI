@@ -346,10 +346,19 @@ function ModeIndicator({
   // the local permission mode shown here doesn't reflect the agent's state.
   // Rendered before the tasks pill so a long pill label (e.g. ultraplan URL)
   // doesn't push the mode indicator off-screen.
+  const permissionModeLabel = currentMode === 'bypassPermissions' || currentMode === 'dontAsk'
+    ? '危险模式'
+    : currentMode === 'acceptEdits'
+      ? '自动接受编辑'
+      : currentMode === 'plan'
+        ? '计划模式'
+        : currentMode === 'auto'
+          ? '自动模式'
+          : permissionModeTitle(currentMode ?? 'default').toLowerCase();
   const modePart = currentMode && hasActiveMode && !getIsRemoteMode() ? <Text color={getModeColor(currentMode)} key="mode">
         {permissionModeSymbol(currentMode)}{' '}
-        {currentMode === 'bypassPermissions' ? '危险模式' : permissionModeTitle(currentMode).toLowerCase()}
-        {currentMode === 'bypassPermissions' && '（所有权限检查已跳过）'}
+        {permissionModeLabel}
+        {(currentMode === 'bypassPermissions' || currentMode === 'dontAsk') && '（所有权限检查已跳过）'}
         {shouldShowModeHint && <Text dimColor>
             {'  按 '}
             <KeyboardShortcutHint shortcut={modeCycleShortcut} action="切换模式" parens />
