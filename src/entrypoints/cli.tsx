@@ -51,6 +51,9 @@ async function main(): Promise<void> {
     return;
   }
 
+  const { loadInstalledConfig } = await import('../bootstrap/installedConfig.js');
+  loadInstalledConfig();
+
   // For all other paths, load the startup profiler
   const {
     profileCheckpoint

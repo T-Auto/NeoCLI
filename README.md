@@ -1,5 +1,7 @@
 # NeoCLI
 
+Windows installation is documented in [INSTALL-WINDOWS.md](INSTALL-WINDOWS.md).
+
 <p align="center">
   基于 free-code 二次开发 · 使用DeepSeek API运行
 </p>

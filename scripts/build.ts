@@ -9,6 +9,7 @@ const pkg = await Bun.file(new URL('../package.json', import.meta.url)).json() a
 const args = process.argv.slice(2)
 const compile = args.includes('--compile')
 const dev = args.includes('--dev')
+const windowsInstaller = args.includes('--windows-installer')
 
 const fullExperimentalFeatures = [
   'AGENT_MEMORY_SNAPSHOT',
@@ -110,7 +111,9 @@ for (let i = 0; i < args.length; i += 1) {
 const features = [...featureSet]
 
 const outfile = compile
-  ? dev
+  ? windowsInstaller
+    ? './dist/windows/NeoCLI'
+    : dev
     ? './dist/NeoCLI-dev'
     : './dist/NeoCLI'
   : dev
@@ -124,7 +127,7 @@ if (outDir !== '.') {
   mkdirSync(outDir, { recursive: true })
 }
 
-const externals = [
+const externals = windowsInstaller ? [] : [
   '@ant/*',
   'audio-capture-napi',
   'image-processor-napi',
@@ -164,7 +167,7 @@ const cmd = [
   './src/entrypoints/cli.tsx',
   '--compile',
   '--target',
-  'bun',
+  windowsInstaller ? 'bun-windows-x64' : 'bun',
   '--format',
   'esm',
   '--outfile',
