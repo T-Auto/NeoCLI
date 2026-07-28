@@ -4,6 +4,8 @@ Install `NeoCLI-Setup-<version>-x64.exe`. The setup wizard requires an API key a
 
 The installer stores the API key for the current Windows account at `%APPDATA%\NeoCLI\installer.json`. This file is intentionally outside the installation directory so an upgrade or uninstall does not delete the key. Do not share this file.
 
+NeoCLI starts in dangerous mode after a new installation. It skips permission prompts; the lower-left status area renders a red warning and permanently shows `Shift+Tab` as the mode-switch shortcut. Press `Shift+Tab` to switch back to a confirmation-based mode.
+
 At launch, `ANTHROPIC_AUTH_TOKEN` and `ANTHROPIC_API_KEY` take precedence over the installer value. This supports CI and managed deployments without changing the installer configuration.
 
 To build the installer from source on Windows, install Bun 1.3.11 and Inno Setup 6, then run:

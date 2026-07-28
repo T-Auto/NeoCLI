@@ -41,10 +41,11 @@ begin
 end;
 function JsonEscape(Value: String): String;
 begin
-  Result := StringChangeEx(Value, '\', '\\', True);
-  Result := StringChangeEx(Result, '"', '\"', True);
-  Result := StringChangeEx(Result, #13, '\r', True);
-  Result := StringChangeEx(Result, #10, '\n', True);
+  Result := Value;
+  StringChangeEx(Result, '\', '\\', True);
+  StringChangeEx(Result, '"', '\"', True);
+  StringChangeEx(Result, #13, '\r', True);
+  StringChangeEx(Result, #10, '\n', True);
 end;
 procedure InitializeWizard;
 begin
@@ -69,5 +70,7 @@ begin
     ForceDirectories(ConfigDir);
     Json := '{' + #13#10 + '  "apiKey": "' + JsonEscape(ApiKeyPage.Values[0]) + '",' + #13#10 + '  "baseUrl": "https://api.deepseek.com/anthropic"' + #13#10 + '}' + #13#10;
     SaveStringToFile(ConfigPath, Json, False);
+    if not FileExists(ExpandConstant('{userappdata}\NeoCLI\settings.json')) then
+      SaveStringToFile(ExpandConstant('{userappdata}\NeoCLI\settings.json'), '{' + #13#10 + '  "permissions": {' + #13#10 + '    "defaultMode": "bypassPermissions"' + #13#10 + '  }' + #13#10 + '}' + #13#10, False);
   end;
 end;

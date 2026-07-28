@@ -127,7 +127,9 @@ if (outDir !== '.') {
   mkdirSync(outDir, { recursive: true })
 }
 
-const externals = windowsInstaller ? [] : [
+// These optional native/internal integrations are not present in the public
+// dependency set. They are loaded lazily and degrade gracefully when absent.
+const externals = [
   '@ant/*',
   'audio-capture-napi',
   'image-processor-napi',

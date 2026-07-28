@@ -333,8 +333,9 @@ function ModeIndicator({
   // low enough to show PR status on standard 80-col terminals.
   const shouldShowPrStatus = isPrStatusEnabled() && prStatus.number !== null && prStatus.reviewState !== null && prStatus.url !== null && primaryItemCount < 2 && (primaryItemCount === 0 || columns >= 80);
 
-  // Hide the shift+tab hint when there are 2 primary items
-  const shouldShowModeHint = primaryItemCount < 2;
+  // Permission mode is safety-critical, so always expose the keyboard path to
+  // inspect and change it even when other footer indicators are present.
+  const shouldShowModeHint = true;
 
   // Check if we have in-process teammates (showing pills)
   // In spinner-tree mode, pills are disabled - teammates appear in the spinner tree instead
@@ -347,10 +348,11 @@ function ModeIndicator({
   // doesn't push the mode indicator off-screen.
   const modePart = currentMode && hasActiveMode && !getIsRemoteMode() ? <Text color={getModeColor(currentMode)} key="mode">
         {permissionModeSymbol(currentMode)}{' '}
-        {permissionModeTitle(currentMode).toLowerCase()} on
+        {currentMode === 'bypassPermissions' ? '危险模式' : permissionModeTitle(currentMode).toLowerCase()}
+        {currentMode === 'bypassPermissions' && '（所有权限检查已跳过）'}
         {shouldShowModeHint && <Text dimColor>
-            {' '}
-            <KeyboardShortcutHint shortcut={modeCycleShortcut} action="cycle" parens />
+            {'  按 '}
+            <KeyboardShortcutHint shortcut={modeCycleShortcut} action="切换模式" parens />
           </Text>}
       </Text> : null;
 
